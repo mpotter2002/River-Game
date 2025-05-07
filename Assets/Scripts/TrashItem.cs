@@ -13,6 +13,15 @@ public class TrashItem : MonoBehaviour
     void OnMouseDown()
     {
         Debug.Log($"Trash item clicked: {gameObject.name}"); // Optional: for testing
+        
+        if (ScoreManager.Instance != null)
+        {
+        ScoreManager.Instance.AddScore(1); // Add 1 point
+        }
+        else
+    {
+         Debug.LogWarning($"TrashItem: ScoreManager.Instance is null! Cannot add score for {gameObject.name}");
+    }
 
         // --- Optional Enhancements ---
         // Add points to a score manager
