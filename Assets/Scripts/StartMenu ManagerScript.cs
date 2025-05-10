@@ -17,6 +17,8 @@ public class StartMenuManager : MonoBehaviour
     [SerializeField] private RiverBackgroundGenerator riverBackgroundGenerator;
     [Tooltip("Assign the GameObject that has the SkyscraperSpawner script.")]
     [SerializeField] private SkyscraperSpawner skyscraperSpawner;
+    [Header("Tutorial Control")]
+    [SerializeField] private TutorialManager tutorialManager;
     // [SerializeField] private PlayerController playerController;
 
 
@@ -46,32 +48,28 @@ public class StartMenuManager : MonoBehaviour
         SetGameplayScriptsActive(false);
     }
 
-    public void StartGame()
+   public void StartGame() // This is in StartMenuManager.cs
+{
+    Debug.Log("StartMenuManager: Start Game button clicked! Beginning tutorial sequence.");
+
+    if (startMenuPanel != null)
     {
-        Debug.Log("Start Game button clicked! Attempting to hide panel and start game.");
-
-        if (startMenuPanel != null)
-        {
-            Debug.Log($"StartMenuManager: Found startMenuPanel '{startMenuPanel.name}'. Setting it to inactive.");
-            startMenuPanel.SetActive(false);
-            if (!startMenuPanel.activeSelf) // Check if it actually became inactive
-            {
-                Debug.Log("StartMenuManager: startMenuPanel successfully set to inactive.");
-            }
-            else
-            {
-                Debug.LogWarning("StartMenuManager: Tried to set startMenuPanel inactive, but it's still active. Check for other scripts controlling it or if it's a prefab instance issue.");
-            }
-        }
-        else
-        {
-            Debug.LogError("StartMenuManager: startMenuPanel reference is NULL when trying to hide it in StartGame()! Assign it in the Inspector.");
-        }
-
-        Time.timeScale = 1f;
-        SetGameplayScriptsActive(true);
+        startMenuPanel.SetActive(false); // Hide the initial welcome panel
     }
 
+    if (tutorialManager != null)
+    {
+        tutorialManager.BeginTutorialSequence(); // Tell TutorialManager to take over
+    }
+    else
+    {
+        Debug.LogError("StartMenuManager: TutorialManager not assigned! Cannot start tutorial.");
+        // Fallback: Directly start the game if tutorial manager is missing (optional)
+        // Time.timeScale = 1f;
+        // SetGameplayScriptsActive(true);
+    }
+    // Time.timeScale and SetGameplayScriptsActive will now be handled by TutorialManager
+}
     private void SetGameplayScriptsActive(bool isActive)
     {
         if (trashSpawner != null) trashSpawner.enabled = isActive;

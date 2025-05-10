@@ -1,109 +1,220 @@
 using UnityEngine;
-using System.Collections; // Required for Coroutines
+using System.Collections;
+using System.Collections.Generic; // Required for List
 
 public class TrashSpawner : MonoBehaviour
 {
-    [Header("Trash Prefabs")]
-    [SerializeField] private GameObject[] trashPrefabs; // Array to hold different trash prefabs
+    [Header("Real Game Trash Prefabs")]
+    [Tooltip("Assign your ACTUAL trash item PREFABS here for the main game.")]
+    [SerializeField] private GameObject[] realTrashPrefabs;
 
-    // --- Values below are now LOCAL OFFSETS from this object's position (which should be parented to the camera) ---
-    [Header("Spawning Area (Local Offsets from Camera)")] 
+    // --- Values below are LOCAL OFFSETS from this object's position (which should be parented to the camera) ---
+    [Header("Spawning Area (Local Offsets from Camera)")]
     [Tooltip("Minimum X offset from the camera's center.")]
     [SerializeField] private float spawnAreaMinX = -5f;
     [Tooltip("Maximum X offset from the camera's center.")]
     [SerializeField] private float spawnAreaMaxX = 5f;
-    
     [Tooltip("Minimum Y offset from the camera's center.")]
-    [SerializeField] private float spawnAreaMinY = 6f; // Example: Start spawning just ABOVE camera view
+    [SerializeField] private float spawnAreaMinY = 11f;
     [Tooltip("Maximum Y offset from the camera's center.")]
-    [SerializeField] private float spawnAreaMaxY = 10f;// Example: Spawn range above camera view
-    // --- End Local Offset Variables ---
+    [SerializeField] private float spawnAreaMaxY = 15f;
 
     [Header("Spawning Timing")]
     [Tooltip("Minimum time delay (seconds) between spawns.")]
     [SerializeField] private float minSpawnDelay = 0.5f;
     [Tooltip("Maximum time delay (seconds) between spawns.")]
     [SerializeField] private float maxSpawnDelay = 2.0f;
-    [Tooltip("Initial delay (seconds) before the first spawn.")]
+    [Tooltip("Initial delay (seconds) before the first spawn when this component becomes enabled.")]
     [SerializeField] private float initialDelay = 1.0f;
 
-    void Start()
+    // --- Tutorial Specific Variables ---
+    private List<TutorialItemData> currentTutorialItems;
+    private int nextTutorialItemIndex = 0;
+    private bool isTutorialMode = false;
+
+    private Coroutine spawningCoroutine; // To store and manage the spawning loop
+
+    // void Awake()
+    // {
+    //     // Consider disabling by default if always controlled externally
+    //     // this.enabled = false;
+    // }
+
+    void OnDisable()
     {
-        // Basic check to ensure prefabs are assigned
-        if (trashPrefabs == null || trashPrefabs.Length == 0)
+        // When this component is disabled, stop all spawning
+        StopSpawning();
+    }
+
+    // --- Public methods to be called by TutorialManager ---
+
+   public void StartTutorialSpawning(List<TutorialItemData> tutorialItemsToSpawn)
+{
+    Debug.Log("TrashSpawner: Attempting to Start TUTORIAL spawning."); // Modified log
+
+    isTutorialMode = true;
+    currentTutorialItems = tutorialItemsToSpawn;
+    nextTutorialItemIndex = 0;
+
+    // --- ADD THIS DEBUG LOG ---
+    if (currentTutorialItems != null)
+    {
+        Debug.Log($"TrashSpawner: Received tutorialItemsToSpawn list with {currentTutorialItems.Count} items.");
+    }
+    else
+    {
+        Debug.LogWarning("TrashSpawner: Received tutorialItemsToSpawn list IS NULL.");
+    }
+    // --------------------------
+
+    if (currentTutorialItems == null || currentTutorialItems.Count == 0)
+    {
+        Debug.LogWarning("TrashSpawner: Tutorial items list is empty or null AFTER assignment. No tutorial items will spawn."); // Modified log
+        isTutorialMode = false; // Revert if no items
+        return;
+    }
+
+    StopSpawningInternal(); // Stop any existing coroutine
+    spawningCoroutine = StartCoroutine(SpawnLoop());
+}
+    public void StartRealGameSpawning()
+    {
+        Debug.Log("TrashSpawner: Starting REAL GAME spawning.");
+        isTutorialMode = false;
+        currentTutorialItems = null; // Clear tutorial items
+
+        if (realTrashPrefabs == null || realTrashPrefabs.Length == 0)
         {
-            Debug.LogError("Trash Spawner: No trash prefabs assigned in the Inspector!");
-            enabled = false; // Disable the script if no prefabs
+            Debug.LogError("TrashSpawner: RealTrashPrefabs array is empty or null. Cannot start real game spawning.");
             return;
         }
-        
-        // Check if parented, suggest parenting to camera if not (optional warning)
-        if (transform.parent == null || Camera.main == null || transform.parent != Camera.main.transform)
-        {
-             Debug.LogWarning("TrashSpawner: For Option 1 setup, this GameObject should be parented to the Main Camera.");
-        }
 
-        // Start the spawning loop as a Coroutine
-        StartCoroutine(SpawnLoop());
+        StopSpawningInternal(); // Stop any existing coroutine
+        spawningCoroutine = StartCoroutine(SpawnLoop());
     }
+
+    // Public method to stop spawning, can be called externally
+    public void StopSpawning()
+    {
+        StopSpawningInternal();
+    }
+
+    // Internal method to handle stopping the coroutine
+    private void StopSpawningInternal()
+    {
+        if (spawningCoroutine != null)
+        {
+            StopCoroutine(spawningCoroutine);
+            spawningCoroutine = null;
+            Debug.Log("TrashSpawner: Spawning coroutine stopped.");
+        }
+    }
+
+    // --- End Public methods ---
 
     IEnumerator SpawnLoop()
     {
-        // Wait for the initial delay before starting
         yield return new WaitForSeconds(initialDelay);
-
-        // Infinite loop to keep spawning trash while the script is active
-        while (true) 
+        while (true) // Loop will continue as long as the coroutine is running
         {
-            // Wait for a random amount of time before spawning the next trash
             float randomDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
             yield return new WaitForSeconds(randomDelay);
-
-            // Spawn a single piece of trash
-            SpawnTrash();
+            SpawnNextItem();
         }
     }
 
-    void SpawnTrash()
+    void SpawnNextItem()
     {
-        // 1. Select a random trash prefab from the array
-        int randomIndex = Random.Range(0, trashPrefabs.Length);
-        GameObject prefabToSpawn = trashPrefabs[randomIndex];
+        GameObject objectToSpawn = null; // This will be the fully configured GO for tutorial, or prefab for real game
+        TutorialItemData tutorialDataForThisItem = null;
 
-        // 2. Calculate random LOCAL offset position relative to the spawner
+        if (isTutorialMode)
+        {
+            if (currentTutorialItems == null || currentTutorialItems.Count == 0 || nextTutorialItemIndex >= currentTutorialItems.Count)
+            {
+                Debug.Log("TrashSpawner: Reached end of tutorial items or list empty. Tutorial spawning cycle complete for now.");
+                // The TutorialManager should call StopSpawning() when the tutorial phase is truly over.
+                // This coroutine might stop if this spawner component gets disabled.
+                return; // Don't spawn anything further in this mode if out of items
+            }
+
+            tutorialDataForThisItem = currentTutorialItems[nextTutorialItemIndex];
+            if (tutorialDataForThisItem.shadowSprite != null)
+            {
+                // Create and configure the shadow GameObject
+                GameObject shadowGO = new GameObject("TutorialShadow_" + tutorialDataForThisItem.itemName);
+                SpriteRenderer sr = shadowGO.AddComponent<SpriteRenderer>();
+                sr.sprite = tutorialDataForThisItem.shadowSprite;
+                // TODO: Set appropriate sorting layer and order for shadow sprites
+                // Example: sr.sortingLayerName = "Gameplay"; sr.sortingOrder = 0;
+
+                BoxCollider2D collider = shadowGO.AddComponent<BoxCollider2D>();
+                // Decide if trigger or not: collider.isTrigger = true;
+
+                TutorialShadowItem shadowItemScript = shadowGO.AddComponent<TutorialShadowItem>();
+                shadowItemScript.Initialize(tutorialDataForThisItem);
+
+                objectToSpawn = shadowGO; // This is now a fully formed GameObject
+            }
+            else
+            {
+                Debug.LogWarning($"TrashSpawner: Shadow sprite for tutorial item '{tutorialDataForThisItem.itemName}' is null.");
+            }
+            nextTutorialItemIndex++;
+        }
+        else // Real game mode
+        {
+            if (realTrashPrefabs == null || realTrashPrefabs.Length == 0)
+            {
+                Debug.LogError("TrashSpawner: realTrashPrefabs is not set or empty in real game mode.");
+                return;
+            }
+            int randomIndex = Random.Range(0, realTrashPrefabs.Length);
+            // In real game mode, objectToSpawn is a PREFAB
+            objectToSpawn = realTrashPrefabs[randomIndex];
+        }
+
+        if (objectToSpawn == null)
+        {
+            return; // Nothing to spawn
+        }
+
+        // Calculate spawn position
         float randomXOffset = Random.Range(spawnAreaMinX, spawnAreaMaxX);
         float randomYOffset = Random.Range(spawnAreaMinY, spawnAreaMaxY);
-        Vector3 localSpawnOffset = new Vector3(randomXOffset, randomYOffset, 0f); 
+        Vector3 localSpawnOffset = new Vector3(randomXOffset, randomYOffset, 0f);
+        Vector3 spawnPosition = transform.position + localSpawnOffset;
 
-        // 3. Calculate the WORLD spawn position by adding the offset to the spawner's current world position
-        //    Since the spawner is parented to the camera, transform.position IS the camera's world position 
-        //    (assuming spawner's local position is 0,0,0 relative to camera).
-        Vector3 spawnPosition = transform.position + localSpawnOffset; 
-
-        // 4. Instantiate (create) the selected trash prefab at the calculated position
-        GameObject newTrash = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
-
-        // Debug.Log($"Spawned {newTrash.name} at {spawnPosition}"); // Optional: for testing
+        // Instantiate or Position
+        if (isTutorialMode)
+        {
+            // objectToSpawn is already an instantiated GameObject, just set its position
+            if (objectToSpawn.GetComponent<TutorialShadowItem>() != null) // Check it's the shadow GO
+            {
+                 objectToSpawn.transform.position = spawnPosition;
+                 // Consider parenting if needed: objectToSpawn.transform.SetParent(this.transform);
+            }
+        }
+        else // Real game mode: objectToSpawn is a prefab
+        {
+            Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
+            // Consider parenting if needed: newRealTrash.transform.SetParent(this.transform);
+        }
     }
 
-    // Optional: Visualize the spawn area RECTANGLE relative to this object's position
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        
-        // Use the spawner's current world position as the center for drawing offsets
-        Vector3 center = transform.position; 
+        Vector3 center = transform.position;
 
-        // Define the 4 corners using the center and the local offsets
         Vector3 topLeft = center + new Vector3(spawnAreaMinX, spawnAreaMaxY, 0);
         Vector3 topRight = center + new Vector3(spawnAreaMaxX, spawnAreaMaxY, 0);
         Vector3 bottomLeft = center + new Vector3(spawnAreaMinX, spawnAreaMinY, 0);
         Vector3 bottomRight = center + new Vector3(spawnAreaMaxX, spawnAreaMinY, 0);
 
-        // Draw the 4 lines connecting the corners
-        Gizmos.DrawLine(topLeft, topRight);     // Top edge
-        Gizmos.DrawLine(topRight, bottomRight); // Right edge
-        Gizmos.DrawLine(bottomRight, bottomLeft);// Bottom edge
-        Gizmos.DrawLine(bottomLeft, topLeft);   // Left edge
+        Gizmos.DrawLine(topLeft, topRight);
+        Gizmos.DrawLine(topRight, bottomRight);
+        Gizmos.DrawLine(bottomRight, bottomLeft);
+        Gizmos.DrawLine(bottomLeft, topLeft);
     }
 }
