@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10057,7 +10057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10175,18 +10175,20 @@ MonoBehaviour:
   tutorialItems:
   - itemName: Soda Can
     itemDescription: 'A damaged and empty soda can '
-    shadowSprite: {fileID: 7135014928732141427, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
+    shadowSprite: {fileID: 21300000, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
     revealedSprite: {fileID: 2362618192862393911, guid: 4a5c22f8af3fe43e5bfb69a16c62287e, type: 3}
   - itemName: Sun Fish
     itemDescription: A local Chicago Fish
-    shadowSprite: {fileID: 7135014928732141427, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
+    shadowSprite: {fileID: 21300000, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
     revealedSprite: {fileID: -2638619501644654970, guid: 0702cbc203acc46b2b42252029533bcb, type: 3}
   - itemName: Beaver
     itemDescription: They just started coming back to the river oh no!
-    shadowSprite: {fileID: 7135014928732141427, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
+    shadowSprite: {fileID: 21300000, guid: 4be3d23d8d36a43f79133b4f707a7a27, type: 3}
     revealedSprite: {fileID: 4253521595298799253, guid: 3ba3d6a8148c7474bb9bd8eba69f9965, type: 3}
   tutorialItemsToComplete: 3
   trashSpawner: {fileID: 864856823}
+  riverGenerator: {fileID: 804899310}
+  skyscraperSpawner: {fileID: 776040131}
   currentState: 1
 --- !u!4 &1937380162
 Transform:

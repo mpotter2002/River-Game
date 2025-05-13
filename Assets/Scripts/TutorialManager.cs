@@ -8,7 +8,7 @@ public class TutorialManager : MonoBehaviour
     public static TutorialManager Instance { get; private set; }
 
     [Header("Tutorial Flow Panels")]
-    [SerializeField] private GameObject welcomePanel; // Your existing initial welcome panel
+    [SerializeField] private GameObject welcomePanel;
     [SerializeField] private GameObject tutorialIntroPanel;
     [SerializeField] private GameObject itemRevealPanel;
     [SerializeField] private GameObject readyToStartPanel;
@@ -21,129 +21,122 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Button keepButtonReveal;
 
     [Header("Tutorial Intro Panel Elements")]
-    [SerializeField] private Button startTutorialButton; // Button on TutorialIntroPanel
+    [SerializeField] private Button startTutorialButton;
 
     [Header("Ready To Start Panel Elements")]
-    [SerializeField] private Button startRealGameButton; // Button on ReadyToStartPanel
+    [SerializeField] private Button startRealGameButton;
 
     [Header("Tutorial Item Data")]
     [Tooltip("Create a list of items that will appear in the tutorial.")]
     public List<TutorialItemData> tutorialItems = new List<TutorialItemData>();
-    private int currentTutorialItemIndex = 0; // Note: This was not used in the provided TrashSpawner logic for tutorial items.
-                                            // TrashSpawner currently iterates through the whole list provided to it.
     private int itemsProcessedInTutorial = 0;
+    [Tooltip("How many items the player needs to interact with before the tutorial round ends.")]
     [SerializeField] private int tutorialItemsToComplete = 5;
 
     [Header("Game State Control")]
-    [SerializeField] private TrashSpawner trashSpawner; // Assign your TrashSpawner
-    // Add references to other game managers if they need to be controlled
-    // [SerializeField] private RiverBackgroundGenerator riverGenerator;
-    // [SerializeField] private SkyscraperSpawner skyscraperSpawner;
+    [SerializeField] private TrashSpawner trashSpawner;
+    // --- References for your background generators ---
+    [SerializeField] private RiverBackgroundGenerator riverGenerator;
+    [SerializeField] private SkyscraperSpawner skyscraperSpawner;
+    // ----------------------------------------------------
 
 
-    // Enum to manage tutorial states
     public enum TutorialState
     {
-        None,
-        ShowingWelcome, // This state might be managed by StartMenuManager primarily
-        ShowingTutorialIntro,
-        TutorialPlaying,
-        ShowingItemReveal,
-        ShowingReadyToStart,
-        TutorialFinished
+        None, ShowingWelcome, ShowingTutorialIntro, TutorialPlaying,
+        ShowingItemReveal, ShowingReadyToStart, TutorialFinished
     }
     public TutorialState currentState = TutorialState.None;
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
     {
-        // Initial setup: Hide all tutorial panels except the first one (welcome panel)
-        if (welcomePanel == null) Debug.LogError("TutorialManager: Welcome Panel not assigned!");
-        if (tutorialIntroPanel == null) Debug.LogError("TutorialManager: Tutorial Intro Panel not assigned!");
-        if (itemRevealPanel == null) Debug.LogError("TutorialManager: Item Reveal Panel not assigned!");
-        if (readyToStartPanel == null) Debug.LogError("TutorialManager: Ready To Start Panel not assigned!");
-        if (trashSpawner == null) Debug.LogError("TutorialManager: Trash Spawner not assigned!");
+        // Null checks for essential components
+        if (welcomePanel == null) Debug.LogError("TM: Welcome Panel not assigned!");
+        if (tutorialIntroPanel == null) Debug.LogError("TM: Tutorial Intro Panel not assigned!");
+        if (itemRevealPanel == null) Debug.LogError("TM: Item Reveal Panel not assigned!");
+        if (readyToStartPanel == null) Debug.LogError("TM: Ready To Start Panel not assigned!");
+        if (trashSpawner == null) Debug.LogError("TM: Trash Spawner not assigned!");
+        if (riverGenerator == null) Debug.LogWarning("TM: RiverBackgroundGenerator not assigned. It will not be controlled by the tutorial manager.");
+        if (skyscraperSpawner == null) Debug.LogWarning("TM: SkyscraperSpawner not assigned. It will not be controlled by the tutorial manager.");
 
-
-        // Listeners for buttons
+        // Assign button listeners
         if (startTutorialButton != null) startTutorialButton.onClick.AddListener(StartTutorialGameplay);
-        else Debug.LogError("TutorialManager: Start Tutorial Button (on TutorialIntroPanel) not assigned!");
+        else Debug.LogError("TM: Start Tutorial Button not assigned!");
 
         if (trashButtonReveal != null) trashButtonReveal.onClick.AddListener(HandleItemChoice);
-        else Debug.LogError("TutorialManager: Trash Button Reveal not assigned!");
+        else Debug.LogError("TM: Trash Button Reveal not assigned!");
 
-        if (keepButtonReveal != null) keepButtonReveal.onClick.AddListener(HandleItemChoice); // For now, keep also just advances
-        else Debug.LogError("TutorialManager: Keep Button Reveal not assigned!");
+        if (keepButtonReveal != null) keepButtonReveal.onClick.AddListener(HandleItemChoice);
+        else Debug.LogError("TM: Keep Button Reveal not assigned!");
 
         if (startRealGameButton != null) startRealGameButton.onClick.AddListener(EndTutorialAndStartGame);
-        else Debug.LogError("TutorialManager: Start Real Game Button (on ReadyToStartPanel) not assigned!");
+        else Debug.LogError("TM: Start Real Game Button not assigned!");
 
-
-        // Initially, all tutorial-specific panels should be off.
-        // The StartMenuManager will handle showing the first welcomePanel.
+        // Ensure tutorial-specific panels are initially inactive
         if(tutorialIntroPanel != null) tutorialIntroPanel.SetActive(false);
         if(itemRevealPanel != null) itemRevealPanel.SetActive(false);
         if(readyToStartPanel != null) readyToStartPanel.SetActive(false);
-
-        // The game starts paused by StartMenuManager, TutorialManager doesn't manage Time.timeScale directly here
-        // but will coordinate with StartMenuManager or a GameManager for actual game start.
     }
 
-    // Called by StartMenuManager when the initial "Start" button (on Welcome Panel) is clicked
+    // Called by StartMenuManager to begin the whole tutorial flow
     public void BeginTutorialSequence()
     {
-        if (welcomePanel != null) welcomePanel.SetActive(false); // Hide the main welcome panel
+        if (welcomePanel != null) welcomePanel.SetActive(false);
         if (tutorialIntroPanel != null) tutorialIntroPanel.SetActive(true);
         currentState = TutorialState.ShowingTutorialIntro;
-        Time.timeScale = 0f; // Ensure game is paused for tutorial intro
-        Debug.Log("TutorialManager: Showing Tutorial Intro Panel.");
+        Time.timeScale = 0f; // Pause game for intro text
+        Debug.Log("TutorialManager: Showing Tutorial Intro Panel. Time.timeScale = 0");
 
-        // Disable main game spawners if they are active
-        SetGameplayScriptsActive(false); // Spawners, player, etc.
-        if (trashSpawner != null) trashSpawner.enabled = false; // Specifically ensure trash spawner is off
+        SetGameplayScriptsActive(false); // Disable all gameplay scripts initially
+        if (trashSpawner != null) trashSpawner.enabled = false; // Explicitly ensure trash spawner is off
     }
-
 
     // Called when "Let's Go!" on TutorialIntroPanel is clicked
     public void StartTutorialGameplay()
     {
         if(tutorialIntroPanel != null) tutorialIntroPanel.SetActive(false);
         currentState = TutorialState.TutorialPlaying;
-        Time.timeScale = 1f; // Unpause for tutorial gameplay (clicking shadows)
+        Time.timeScale = 1f; // Unpause for interactive tutorial part
         Debug.Log("TutorialManager: Starting Tutorial Gameplay. Time.timeScale = 1");
-
         itemsProcessedInTutorial = 0;
-        // currentTutorialItemIndex = 0; // Reset for multiple tutorial runs if needed
 
-        // Tell TrashSpawner to start spawning tutorial shadow items
+        // Enable Trash Spawner for tutorial items
         if (trashSpawner != null)
         {
             trashSpawner.enabled = true;
-            trashSpawner.StartTutorialSpawning(tutorialItems); // This method was added to TrashSpawner
+            trashSpawner.StartTutorialSpawning(tutorialItems);
         }
-        // Other game elements for tutorial can be enabled here
+
+        // --- MODIFIED: Enable background generators for the tutorial phase ---
+        if (riverGenerator != null)
+        {
+            riverGenerator.enabled = true;
+            Debug.Log("TutorialManager: Enabling RiverGenerator for tutorial.");
+        }
+        if (skyscraperSpawner != null)
+        {
+            skyscraperSpawner.enabled = true;
+            Debug.Log("TutorialManager: Enabling SkyscraperSpawner for tutorial.");
+            // If you need SkyscraperSpawner to reset to its initial state for the tutorial:
+            // skyscraperSpawner.ResetToFirstSequence(); // Example: You would need to implement this method in SkyscraperSpawner
+        }
+        // ---------------------------------------------------------------------
     }
 
     // Called by TutorialShadowItem when a shadow is clicked
     public void ShadowClicked(TutorialItemData itemData)
     {
-        if (currentState != TutorialState.TutorialPlaying) return;
+        if (currentState != TutorialState.TutorialPlaying) return; // Only process clicks during active tutorial play
 
         currentState = TutorialState.ShowingItemReveal;
         Time.timeScale = 0f; // Pause game while item reveal popup is shown
         Debug.Log($"TutorialManager: Shadow clicked for {itemData.itemName}. Time.timeScale = 0");
-
 
         // Populate and show ItemRevealPanel
         if (itemImageReveal != null) itemImageReveal.sprite = itemData.revealedSprite;
@@ -161,18 +154,19 @@ public class TutorialManager : MonoBehaviour
         itemsProcessedInTutorial++;
         Debug.Log($"TutorialManager: Item choice made. Items processed: {itemsProcessedInTutorial}/{tutorialItemsToComplete}");
 
-
         if (itemsProcessedInTutorial >= tutorialItemsToComplete)
         {
             // Tutorial round complete
             currentState = TutorialState.ShowingReadyToStart;
             if(readyToStartPanel != null) readyToStartPanel.SetActive(true);
+            Time.timeScale = 0f; // Keep game paused for "Ready to Start" panel
             Debug.Log("TutorialManager: Tutorial items complete. Showing ReadyToStartPanel. Time.timeScale remains 0.");
             if (trashSpawner != null)
             {
-                trashSpawner.StopSpawning(); // This method was added to TrashSpawner
+                trashSpawner.StopSpawning();
                 trashSpawner.enabled = false;
             }
+            // Background generators will pause due to Time.timeScale = 0f
         }
         else
         {
@@ -181,6 +175,7 @@ public class TutorialManager : MonoBehaviour
             Time.timeScale = 1f; // Unpause to find next shadow
             Debug.Log("TutorialManager: Continuing tutorial. Time.timeScale = 1");
             // TrashSpawner continues spawning tutorial items if more are needed
+            // Background generators will resume
         }
     }
 
@@ -189,27 +184,51 @@ public class TutorialManager : MonoBehaviour
     {
         if(readyToStartPanel != null) readyToStartPanel.SetActive(false);
         currentState = TutorialState.TutorialFinished;
-        Time.timeScale = 1f; // Ensure game is running
-        Debug.Log("TutorialManager: Tutorial Finished. Starting Real Game!");
+        Time.timeScale = 1f; // CRUCIAL: Ensure game is running for the real game
+        Debug.Log("TutorialManager: Tutorial Finished. Starting Real Game! Time.timeScale = 1");
 
-        // Enable main game systems
-        SetGameplayScriptsActive(true);
+        // Enable all main game systems
+        SetGameplayScriptsActive(true); // This will enable river/skyscraper spawners
+
+        // Specifically configure TrashSpawner for the real game
         if (trashSpawner != null)
         {
             trashSpawner.enabled = true;
-            trashSpawner.StartRealGameSpawning(); // This method was added to TrashSpawner
+            trashSpawner.StartRealGameSpawning();
         }
-
-        // Potentially notify a GameManager to take over
-        // FindObjectOfType<GameManager>()?.StartMainGame();
     }
 
-    // Helper to enable/disable main gameplay scripts
+    // Helper function to enable/disable main gameplay-related scripts
     private void SetGameplayScriptsActive(bool isActive)
     {
-        // Example: Enable/disable your actual game spawners here
-        // if (riverGenerator != null) riverGenerator.enabled = isActive;
-        // if (skyscraperSpawner != null) skyscraperSpawner.enabled = isActive;
-        // Note: trashSpawner is handled more specifically above for tutorial vs real game
+        Debug.Log($"TutorialManager: Setting gameplay scripts active state to: {isActive}");
+        if (riverGenerator != null)
+        {
+            riverGenerator.enabled = isActive;
+            Debug.Log($"-- RiverBackgroundGenerator.enabled set to {isActive}");
+        }
+        // else Debug.LogWarning("TutorialManager: RiverBackgroundGenerator not assigned, cannot control its state."); // Can be spammy
+
+        if (skyscraperSpawner != null)
+        {
+            skyscraperSpawner.enabled = isActive;
+            Debug.Log($"-- SkyscraperSpawner.enabled set to {isActive}");
+        }
+        // else Debug.LogWarning("TutorialManager: SkyscraperSpawner not assigned, cannot control its state."); // Can be spammy
+
+        // Note: TrashSpawner's enabled state is more specifically managed by the methods
+        // that call StartTutorialSpawning or StartRealGameSpawning.
+        // However, this function ensures it's part of the general enable/disable sweep if needed.
+        if (trashSpawner != null)
+        {
+            // If we are globally activating scripts for the real game, ensure trash spawner is enabled.
+            // If we are globally deactivating, it should also be deactivated.
+            // The specific spawning mode is set by StartTutorialSpawning/StartRealGameSpawning.
+            if (isActive && currentState == TutorialState.TutorialFinished) {
+                 // Already handled by EndTutorialAndStartGame
+            } else {
+                 // trashSpawner.enabled = isActive; // Already handled by specific calls
+            }
+        }
     }
 }
