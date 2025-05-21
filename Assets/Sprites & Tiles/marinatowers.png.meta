@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 20e9a6a82a29d4201b31f87e579f3dbe
+guid: 12693e37e711f4990bce3fb8f5337114
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3695792897202278799
-    second: buildingWithHVAC_0
+      213: -1772730387464648430
+    second: marinatowers_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: buildingWithHVAC_0
+      name: marinatowers_0
       rect:
         serializedVersion: 2
-        x: 89
-        y: 107
-        width: 80
-        height: 182
+        x: 207
+        y: 0
+        width: 817
+        height: 972
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 17ea8dee0f7e5bcc0800000000000000
-      internalID: -3695792897202278799
+      spriteID: 21901acda1ff567e0800000000000000
+      internalID: -1772730387464648430
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      buildingWithHVAC_0: -3695792897202278799
+      marinatowers_0: -1772730387464648430
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

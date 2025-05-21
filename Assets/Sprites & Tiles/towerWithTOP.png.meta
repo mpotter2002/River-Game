@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 20e9a6a82a29d4201b31f87e579f3dbe
+guid: aff8868377c2f4cbfb3f6d75bbd0a92b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3695792897202278799
-    second: buildingWithHVAC_0
+      213: 2238335468304790581
+    second: towerWithTOP_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 20
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: buildingWithHVAC_0
+      name: towerWithTOP_0
       rect:
         serializedVersion: 2
-        x: 89
-        y: 107
+        x: 131
+        y: 71
         width: 80
-        height: 182
+        height: 230
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 17ea8dee0f7e5bcc0800000000000000
-      internalID: -3695792897202278799
+      spriteID: 534f67ccf3a201f10800000000000000
+      internalID: 2238335468304790581
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      buildingWithHVAC_0: -3695792897202278799
+      towerWithTOP_0: 2238335468304790581
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
