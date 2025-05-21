@@ -2,46 +2,70 @@ using UnityEngine;
 
 public class TrashItem : MonoBehaviour
 {
-    // This function is automatically called by Unity when 
-    // the GameObject's Collider is clicked by the mouse (or tapped on mobile).
-    // Requirements: 
-    // 1. This script must be on the GameObject you want to click.
-    // 2. The GameObject must have a Collider2D component.
-    // 3. There must be an EventSystem in your scene (usually added automatically with UI Canvas, or add manually).
-    // 4. The Camera viewing this object needs a Physics 2D Raycaster component if using UI elements or complex setups, 
-    //    but for simple Collider clicks, it often works directly.
+    [Header("Item Properties")]
+    [Tooltip("Check this if this trash item is a special Divvy Bike that adds time.")]
+    public bool isDivvyBike = false;
+    // If you want each Divvy Bike (or other special items) to give a different time bonus,
+    // you could add a variable here like:
+    // public float specificTimeBonus = 5f;
+    // And then use that in OnMouseDown instead of TutorialManager.Instance.divvyBikeTimeBonus
+
     void OnMouseDown()
     {
-        Debug.Log($"Trash item clicked: {gameObject.name}"); // Optional: for testing
-        
+        // Ensure the script component is enabled before processing clicks
+        if (!enabled) return;
+
+        Debug.Log($"Trash item clicked: {gameObject.name}");
+
+        // --- Add Score ---
         if (ScoreManager.Instance != null)
         {
-        ScoreManager.Instance.AddScore(1); // Add 1 point
+            ScoreManager.Instance.AddScore(1); // Add 1 point for any trash
         }
         else
-    {
-         Debug.LogWarning($"TrashItem: ScoreManager.Instance is null! Cannot add score for {gameObject.name}");
-    }
+        {
+             Debug.LogWarning($"TrashItem ({gameObject.name}): ScoreManager.Instance is null! Cannot add score.");
+        }
 
-        // --- Optional Enhancements ---
-        // Add points to a score manager
-        // ScoreManager.Instance.AddScore(10); 
-
-        // Play a sound effect
-        // SoundManager.Instance.PlayCollectSound();
-
-        // Spawn a particle effect at the trash's position
-        // if (collectionEffectPrefab != null) {
-        //     Instantiate(collectionEffectPrefab, transform.position, Quaternion.identity);
-        // }
-        // --- End Optional Enhancements ---
+        // --- Handle Divvy Bike Time Bonus ---
+        if (isDivvyBike)
+        {
+            if (TutorialManager.Instance != null)
+            {
+                // Check if the game is actually in the MainGamePlaying phase before adding time
+                // This uses the 'currentPhase' and 'GamePhase' enum from the TutorialManager
+                if (TutorialManager.Instance.currentPhase == TutorialManager.GamePhase.MainGamePlaying)
+                {
+                    // Use the public divvyBikeTimeBonus from TutorialManager
+                    TutorialManager.Instance.AddTimeClock(TutorialManager.Instance.divvyBikeTimeBonus);
+                }
+                else
+                {
+                    Debug.LogWarning($"TrashItem ({gameObject.name}): Divvy Bike clicked, but game is not in MainGamePlaying phase. Current phase: {TutorialManager.Instance.currentPhase}. No time added.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"TrashItem ({gameObject.name}): TutorialManager.Instance is null! Cannot add time for Divvy Bike.");
+            }
+        }
 
         // Destroy the GameObject this script is attached to
-        Destroy(gameObject); 
+        Destroy(gameObject);
     }
 
-    // --- Optional: Add these variables if you want effects/score ---
-    // [SerializeField] private GameObject collectionEffectPrefab; // Assign a particle effect prefab in the Inspector
-    // public int pointsValue = 10; // Assign points value per trash type
-    // --- End Optional ---
+    // Optional: Visual feedback on hover
+    void OnMouseEnter()
+    {
+        // Example: Change scale or color slightly if you have a SpriteRenderer
+        // SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        // if (sr != null) { sr.color = Color.yellow; }
+    }
+
+    void OnMouseExit()
+    {
+        // Example: Revert visual feedback
+        // SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        // if (sr != null) { sr.color = Color.white; }
+    }
 }

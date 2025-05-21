@@ -17,7 +17,8 @@ public class TutorialShadowItem : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (!enabled) return; // Do nothing if the script component is disabled
+        // Ensure the script component is enabled before processing clicks
+        if (!enabled) return;
 
         if (itemData == null)
         {
@@ -29,13 +30,14 @@ public class TutorialShadowItem : MonoBehaviour
         if (TutorialManager.Instance != null)
         {
             // Check if the TutorialManager is in the correct state to process this click
-            if (TutorialManager.Instance.currentState == TutorialManager.TutorialState.TutorialPlaying)
+            // This uses the 'currentPhase' and 'GamePhase' enum from the TutorialManager
+            if (TutorialManager.Instance.currentPhase == TutorialManager.GamePhase.TutorialPlaying)
             {
                 TutorialManager.Instance.ShadowClicked(itemData);
             }
             else
             {
-                Debug.LogWarning("TutorialShadowItem: Clicked, but TutorialManager is not in TutorialPlaying state. Current state: " + TutorialManager.Instance.currentState);
+                Debug.LogWarning("TutorialShadowItem: Clicked, but TutorialManager is not in TutorialPlaying state. Current phase: " + TutorialManager.Instance.currentPhase);
             }
         }
         else
@@ -43,10 +45,8 @@ public class TutorialShadowItem : MonoBehaviour
             Debug.LogError("TutorialShadowItem: TutorialManager.Instance is null! Cannot process click for " + gameObject.name);
         }
 
-        // Destroy the shadow object after it's clicked and processed
-        // Ensure it's only destroyed if the click was valid and processed by the manager
-        // Or, let the TutorialManager decide when to destroy it after showing the reveal panel.
-        // For now, let's destroy it immediately after notifying the manager.
+        // Destroy the shadow object after it's clicked and processed.
+        // This ensures it doesn't remain clickable after the reveal panel is shown.
         Destroy(gameObject);
     }
 
@@ -55,21 +55,21 @@ public class TutorialShadowItem : MonoBehaviour
     {
         if (!enabled) return;
         // Example: Slightly change color or scale if you have a SpriteRenderer
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            // sr.color = Color.gray; // Be careful with direct color changes if you have other effects
-        }
+        // SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        // if (sr != null)
+        // {
+        //     // sr.color = Color.gray; // Be careful with direct color changes
+        // }
     }
 
     void OnMouseExit()
     {
         if (!enabled) return;
         // Example: Revert color or scale
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            // sr.color = Color.white; // Revert to original
-        }
+        // SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        // if (sr != null)
+        // {
+        //     // sr.color = Color.white; // Revert to original
+        // }
     }
 }

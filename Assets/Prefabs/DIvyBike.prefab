@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2126554556148181572}
   - component: {fileID: 9108475518920176667}
   m_Layer: 0
-  m_Name: bike
+  m_Name: DIvyBike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,3 +147,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d093561d2a1cb450f8fedc5f9724cefa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDivvyBike: 1
