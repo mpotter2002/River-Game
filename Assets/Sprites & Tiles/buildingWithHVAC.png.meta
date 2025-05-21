@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0b05de5fe652f43339e111215567c32c
+guid: 20e9a6a82a29d4201b31f87e579f3dbe
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6471486541164688296
-    second: Hancock Isometric_0
+      213: -3695792897202278799
+    second: buildingWithHVAC_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hancock Isometric_0
+      name: buildingWithHVAC_0
       rect:
         serializedVersion: 2
-        x: 171
-        y: 29
-        width: 156
-        height: 452
+        x: 89
+        y: 107
+        width: 80
+        height: 182
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 85c48293749a036a0800000000000000
-      internalID: -6471486541164688296
+      spriteID: 17ea8dee0f7e5bcc0800000000000000
+      internalID: -3695792897202278799
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Hancock Isometric_0: -6471486541164688296
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
