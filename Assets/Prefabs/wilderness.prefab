@@ -538,7 +538,7 @@ GameObject:
   - component: {fileID: 8132710837537558508}
   - component: {fileID: 4191073400684414565}
   m_Layer: 0
-  m_Name: Grid 2
+  m_Name: wilderness
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
