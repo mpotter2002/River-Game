@@ -37,7 +37,7 @@ public class TrashItem : MonoBehaviour
                 if (TutorialManager.Instance.currentPhase == TutorialManager.GamePhase.MainGamePlaying)
                 {
                     // Use the public divvyBikeTimeBonus from TutorialManager
-                    TutorialManager.Instance.AddTimeClock(TutorialManager.Instance.divvyBikeTimeBonus);
+                    TutorialManager.Instance.AddTimeToClock(TutorialManager.Instance.divvyBikeTimeBonus);
                 }
                 else
                 {

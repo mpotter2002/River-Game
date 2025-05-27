@@ -5,56 +5,66 @@ using System.Collections.Generic; // Required for List
 public class TrashSpawner : MonoBehaviour
 {
     [Header("Real Game Trash Prefabs")]
-    [Tooltip("Assign your ACTUAL trash item PREFABS here for the main game.")]
+    [Tooltip("Assign your ACTUAL REGULAR trash item PREFABS here for the main game.")]
     [SerializeField] private GameObject[] realTrashPrefabs;
+    [Tooltip("Assign the Divvy Bike PREFAB here. It should have TrashItem.cs with 'isDivvyBike' checked.")]
+    [SerializeField] private GameObject divvyBikePrefab;
+    [Tooltip("How often (in seconds) the Divvy Bike should attempt to spawn.")]
+    [SerializeField] private float divvyBikeSpawnInterval = 10f;
 
     [Header("Spawning Area (Local Offsets from Camera)")]
-    [Tooltip("Minimum X offset from the camera's center.")]
     [SerializeField] private float spawnAreaMinX = -5f;
-    [Tooltip("Maximum X offset from the camera's center.")]
     [SerializeField] private float spawnAreaMaxX = 5f;
-    [Tooltip("Minimum Y offset from the camera's center.")]
     [SerializeField] private float spawnAreaMinY = 11f;
-    [Tooltip("Maximum Y offset from the camera's center.")]
     [SerializeField] private float spawnAreaMaxY = 15f;
 
-    [Header("Spawning Timing")]
-    [Tooltip("Minimum time delay (seconds) between spawns.")]
+    [Header("Spawning Timing (for regular trash)")]
     [SerializeField] private float minSpawnDelay = 0.5f;
-    [Tooltip("Maximum time delay (seconds) between spawns.")]
     [SerializeField] private float maxSpawnDelay = 2.0f;
-    [Tooltip("Initial delay (seconds) before the first spawn when this component becomes enabled.")]
     [SerializeField] private float initialDelay = 1.0f;
 
+    // --- Tutorial Specific Variables ---
     private List<TutorialItemData> currentTutorialItems;
     private int nextTutorialItemIndex = 0;
     private bool isTutorialMode = false;
+
     private Coroutine spawningCoroutine;
+    private float timeSinceLastDivvyBikeSpawn = 0f; // Renamed for clarity, tracks time since last successful Divvy spawn
+    private bool shouldAttemptDivvySpawnNext = false; // Flag to signal SpawnNextItem
 
     void OnDisable()
     {
         StopSpawning();
     }
 
+    // This Update method will handle the Divvy Bike timer
+    void Update()
+    {
+        // Only update Divvy Bike timer if in real game mode and the spawner is actively running
+        if (!isTutorialMode && spawningCoroutine != null && divvyBikePrefab != null)
+        {
+            timeSinceLastDivvyBikeSpawn += Time.deltaTime;
+            if (timeSinceLastDivvyBikeSpawn >= divvyBikeSpawnInterval)
+            {
+                shouldAttemptDivvySpawnNext = true;
+                // Timer will be reset in SpawnNextItem if Divvy bike is successfully chosen
+            }
+        }
+    }
+
+
     public void StartTutorialSpawning(List<TutorialItemData> tutorialItemsToSpawn)
     {
-        Debug.Log("TrashSpawner: Attempting to Start TUTORIAL spawning.");
+        Debug.Log("TrashSpawner: Starting TUTORIAL spawning.");
         isTutorialMode = true;
         currentTutorialItems = tutorialItemsToSpawn;
-        nextTutorialItemIndex = 0; // Reset index when starting tutorial
-
-        if (currentTutorialItems != null)
-        {
-            Debug.Log($"TrashSpawner: Received tutorialItemsToSpawn list with {currentTutorialItems.Count} items.");
-        }
-        else
-        {
-            Debug.LogWarning("TrashSpawner: Received tutorialItemsToSpawn list IS NULL.");
-        }
+        nextTutorialItemIndex = 0;
+        timeSinceLastDivvyBikeSpawn = 0f; // Reset Divvy bike timer
+        shouldAttemptDivvySpawnNext = false;
 
         if (currentTutorialItems == null || currentTutorialItems.Count == 0)
         {
-            Debug.LogWarning("TrashSpawner: Tutorial items list is empty or null AFTER assignment. No tutorial items will spawn.");
+            Debug.LogWarning("TrashSpawner: Tutorial items list is empty or null. No tutorial items will spawn.");
             isTutorialMode = false;
             return;
         }
@@ -67,9 +77,13 @@ public class TrashSpawner : MonoBehaviour
         Debug.Log("TrashSpawner: Starting REAL GAME spawning.");
         isTutorialMode = false;
         currentTutorialItems = null;
-        if (realTrashPrefabs == null || realTrashPrefabs.Length == 0)
+        timeSinceLastDivvyBikeSpawn = 0f; // Reset Divvy bike timer for new game
+        shouldAttemptDivvySpawnNext = false;
+
+
+        if ((realTrashPrefabs == null || realTrashPrefabs.Length == 0) && divvyBikePrefab == null)
         {
-            Debug.LogError("TrashSpawner: RealTrashPrefabs array is empty or null. Cannot start real game spawning.");
+            Debug.LogError("TrashSpawner: No RealTrashPrefabs or DivvyBikePrefab assigned. Cannot start real game spawning.");
             return;
         }
         StopSpawningInternal();
@@ -96,87 +110,78 @@ public class TrashSpawner : MonoBehaviour
         Debug.Log($"TrashSpawner.SpawnLoop: Starting with initialDelay: {initialDelay}s.");
         yield return new WaitForSeconds(initialDelay);
         Debug.Log("TrashSpawner.SpawnLoop: Initial delay complete. Entering spawn cycle.");
-        while (true) // This loop continues as long as the coroutine is active
+
+        while (true)
         {
-            float randomDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
-            Debug.Log($"TrashSpawner.SpawnLoop: Waiting for randomDelay: {randomDelay:F2}s.");
-            yield return new WaitForSeconds(randomDelay);
-            Debug.Log("TrashSpawner.SpawnLoop: Random delay complete. Calling SpawnNextItem().");
+            // The general delay between spawn *opportunities*
+            float currentSpawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
+            // Debug.Log($"TrashSpawner.SpawnLoop: Waiting for currentSpawnDelay: {currentSpawnDelay:F2}s.");
+            yield return new WaitForSeconds(currentSpawnDelay);
+            // Debug.Log("TrashSpawner.SpawnLoop: Current delay complete. Calling SpawnNextItem().");
             SpawnNextItem();
         }
     }
 
     void SpawnNextItem()
     {
-        Debug.Log($"TrashSpawner.SpawnNextItem: Method called. isTutorialMode = {isTutorialMode}"); // Log entry to method
-
         GameObject objectToSpawn = null;
         TutorialItemData tutorialDataForThisItem = null;
 
         if (isTutorialMode)
         {
-            Debug.Log("TrashSpawner.SpawnNextItem: ---- In Tutorial Mode ----");
-
+            // --- TUTORIAL MODE SPAWNING ---
+            // (Tutorial mode logic remains the same as before)
             string ctiStatus = (currentTutorialItems == null) ? "NULL" : currentTutorialItems.Count.ToString();
-            Debug.Log($"TrashSpawner.SpawnNextItem - PRE-CHECK: currentTutorialItems.Count='{ctiStatus}', nextTutorialItemIndex={nextTutorialItemIndex}");
-
-            if (currentTutorialItems == null || currentTutorialItems.Count == 0 || nextTutorialItemIndex >= currentTutorialItems.Count)
-            {
+            if (currentTutorialItems == null || currentTutorialItems.Count == 0 || nextTutorialItemIndex >= currentTutorialItems.Count) {
                 Debug.LogWarning($"TrashSpawner.SpawnNextItem: Condition MET for 'Reached end of tutorial items or list empty'. currentTutorialItems.Count='{ctiStatus}', nextTutorialItemIndex={nextTutorialItemIndex}. Tutorial spawning cycle complete for now (or list was invalid).");
-                // If we've reached the end, we should probably stop the spawner or this specific loop for tutorial items.
-                // For now, just returning will stop this particular spawn attempt.
-                // The TutorialManager should ideally call StopSpawning() when the tutorial phase is over.
                 return;
             }
-
             tutorialDataForThisItem = currentTutorialItems[nextTutorialItemIndex];
-            Debug.Log($"TrashSpawner.SpawnNextItem: Processing tutorial item index {nextTutorialItemIndex}, Item Name: '{tutorialDataForThisItem.itemName}'");
-
-            if (tutorialDataForThisItem.shadowSprite != null)
-            {
-                Debug.Log($"TrashSpawner.SpawnNextItem: Shadow sprite for '{tutorialDataForThisItem.itemName}' IS ASSIGNED ('{tutorialDataForThisItem.shadowSprite.name}'). Creating shadow GameObject.");
-
+            if (tutorialDataForThisItem.shadowSprite != null) {
                 GameObject shadowGO = new GameObject("TutorialShadow_" + tutorialDataForThisItem.itemName);
                 SpriteRenderer sr = shadowGO.AddComponent<SpriteRenderer>();
                 sr.sprite = tutorialDataForThisItem.shadowSprite;
-
-                sr.sortingLayerName = "Default";
-                sr.sortingOrder = 2;
-                Debug.Log($"TrashSpawner.SpawnNextItem: Added SpriteRenderer to '{shadowGO.name}', Sprite: {sr.sprite.name}, SortingLayer: {sr.sortingLayerName}, Order: {sr.sortingOrder}");
-
-                BoxCollider2D collider = shadowGO.AddComponent<BoxCollider2D>();
-                Debug.Log($"TrashSpawner.SpawnNextItem: Added BoxCollider2D to '{shadowGO.name}'.");
-
+                sr.sortingLayerName = "Default"; sr.sortingOrder = 2;
+                shadowGO.AddComponent<BoxCollider2D>();
                 TutorialShadowItem shadowItemScript = shadowGO.AddComponent<TutorialShadowItem>();
-                Debug.Log($"TrashSpawner.SpawnNextItem: Added TutorialShadowItem script to '{shadowGO.name}'.");
                 shadowItemScript.Initialize(tutorialDataForThisItem);
-                Debug.Log($"TrashSpawner.SpawnNextItem: Initialized TutorialShadowItem script for '{shadowGO.name}'.");
-
                 objectToSpawn = shadowGO;
+            } else {
+                Debug.LogWarning($"TrashSpawner.SpawnNextItem: Shadow sprite for tutorial item '{tutorialDataForThisItem.itemName}' IS NULL.");
             }
-            else
-            {
-                Debug.LogWarning($"TrashSpawner.SpawnNextItem: Shadow sprite for tutorial item '{tutorialDataForThisItem.itemName}' IS NULL. Cannot create shadow object for this item.");
-            }
-            nextTutorialItemIndex++; // Increment after processing the current item
-            Debug.Log($"TrashSpawner.SpawnNextItem: Incremented nextTutorialItemIndex to {nextTutorialItemIndex}");
+            nextTutorialItemIndex++;
         }
-        else // Real game mode
+        else // --- REAL GAME MODE SPAWNING ---
         {
-            Debug.Log("TrashSpawner.SpawnNextItem: ---- In Real Game Mode ----");
-            if (realTrashPrefabs == null || realTrashPrefabs.Length == 0)
+            // Debug.Log($"TrashSpawner.SpawnNextItem: Real Game. TimeSinceDivvy: {timeSinceLastDivvyBikeSpawn:F2}, Interval: {divvyBikeSpawnInterval:F2}, ShouldSpawnDivvy: {shouldAttemptDivvySpawnNext}");
+
+            // Prioritize Divvy Bike if its flag is set and prefab exists
+            if (shouldAttemptDivvySpawnNext && divvyBikePrefab != null)
             {
-                Debug.LogError("TrashSpawner: realTrashPrefabs is not set or empty in real game mode.");
-                return;
+                objectToSpawn = divvyBikePrefab;
+                timeSinceLastDivvyBikeSpawn = 0f; // Reset timer explicitly after choosing to spawn it
+                shouldAttemptDivvySpawnNext = false; // Clear the flag
+                Debug.Log("TrashSpawner: Spawning Divvy Bike!");
             }
-            int randomIndex = Random.Range(0, realTrashPrefabs.Length);
-            objectToSpawn = realTrashPrefabs[randomIndex];
-            Debug.Log($"TrashSpawner.SpawnNextItem: Selected real trash prefab '{objectToSpawn.name}' for real game mode.");
+            else // Spawn regular trash (if any exist)
+            {
+                if (realTrashPrefabs != null && realTrashPrefabs.Length > 0)
+                {
+                    int randomIndex = Random.Range(0, realTrashPrefabs.Length);
+                    objectToSpawn = realTrashPrefabs[randomIndex];
+                    // Debug.Log($"TrashSpawner: Spawning regular trash: {objectToSpawn.name}");
+                }
+                else if (divvyBikePrefab == null) // Only log error if no regular trash AND no divvy bike at all
+                {
+                     Debug.LogError("TrashSpawner: realTrashPrefabs is not set or empty, and no DivvyBikePrefab. Nothing to spawn in real game mode.");
+                     return;
+                }
+                // If only divvy bike exists and it's not its time (flag is false), then objectToSpawn might remain null for this cycle, which is fine.
+            }
         }
 
-        if (objectToSpawn == null)
-        {
-            Debug.LogWarning("TrashSpawner.SpawnNextItem: objectToSpawn is NULL after selection logic. Nothing will be spawned this cycle.");
+        if (objectToSpawn == null) {
+            // Debug.LogWarning("TrashSpawner.SpawnNextItem: objectToSpawn is NULL. Nothing will be spawned this cycle.");
             return;
         }
 
@@ -184,25 +189,15 @@ public class TrashSpawner : MonoBehaviour
         float randomYOffset = Random.Range(spawnAreaMinY, spawnAreaMaxY);
         Vector3 localSpawnOffset = new Vector3(randomXOffset, randomYOffset, 0f);
         Vector3 spawnPosition = transform.position + localSpawnOffset;
-        Debug.Log($"TrashSpawner.SpawnNextItem: Calculated spawnPosition: {spawnPosition}");
 
         if (isTutorialMode)
         {
-            // In tutorial mode, objectToSpawn is the already created shadowGO
-            if (objectToSpawn.GetComponent<TutorialShadowItem>() != null) // A good check to ensure it's the shadow
-            {
+            if (objectToSpawn.GetComponent<TutorialShadowItem>() != null) {
                  objectToSpawn.transform.position = spawnPosition;
-                 Debug.Log($"TrashSpawner.SpawnNextItem: Positioned tutorial shadow '{objectToSpawn.name}' at {spawnPosition}.");
-            }
-            else
-            {
-                 Debug.LogWarning($"TrashSpawner.SpawnNextItem: In tutorial mode, but objectToSpawn ('{objectToSpawn.name}') does not have TutorialShadowItem script. This is unexpected.");
             }
         }
-        else // Real game mode, objectToSpawn is a prefab
-        {
-            GameObject newInstance = Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
-            Debug.Log($"TrashSpawner.SpawnNextItem: Instantiated real trash '{newInstance.name}' at {spawnPosition}.");
+        else {
+            Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
         }
     }
 

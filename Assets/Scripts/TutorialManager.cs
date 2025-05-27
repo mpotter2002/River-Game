@@ -27,6 +27,15 @@ public class TutorialManager : MonoBehaviour
     [Header("Ready To Start Panel Elements")]
     [SerializeField] private Button startRealGameButton;
 
+    [Header("Gameplay UI Elements")]
+    [Tooltip("The parent Panel GameObject that contains the score text and its background.")]
+    [SerializeField] private GameObject scoreDisplayPanel;
+    [Tooltip("The parent Panel GameObject that contains the timer text and its background.")]
+    [SerializeField] private GameObject timerDisplayPanel;
+    [Tooltip("UI Text to display the game timer (child of TimerDisplayPanel).")]
+    [SerializeField] private TMP_Text timerTextElement;
+
+
     [Header("Tutorial Item Data")]
     [Tooltip("Create a list of items that will appear in the tutorial.")]
     public List<TutorialItemData> tutorialItems = new List<TutorialItemData>();
@@ -37,18 +46,20 @@ public class TutorialManager : MonoBehaviour
     [Header("Game State Control")]
     [SerializeField] private TrashSpawner trashSpawner;
     [SerializeField] private RiverBackgroundGenerator riverGenerator;
-    [SerializeField] private SkyscraperSpawner skyscraperSpawner;
-    [SerializeField] private ScoreManager scoreManager; // Assign your ScoreManager
+    // --- MODIFIED for Left and Right Skyscraper Spawners ---
+    [SerializeField] private SkyscraperSpawner leftSkyscraperSpawner;
+    [SerializeField] private SkyscraperSpawner rightSkyscraperSpawner;
+    // ---------------------------------------------------------
+    [SerializeField] private ScoreManager scoreManager;
 
-    [Header("Game Timer")]
-    [SerializeField] private float gameTimeLimit = 30f; // Initial time for the game
-    [SerializeField] private TMP_Text timerTextElement; // UI Text to display the timer
+    [Header("Game Timer Settings")]
+    [SerializeField] private float gameTimeLimit = 30f;
     [Tooltip("Time bonus in seconds for collecting a Divvy Bike.")]
-    public float divvyBikeTimeBonus = 5f; // Public, as it should be
+    public float divvyBikeTimeBonus = 5f;
 
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private TMP_Text finalScoreTextElement; // To display score on game over
+    [SerializeField] private TMP_Text finalScoreTextElement;
     [SerializeField] private Button playAgainButton;
 
     private float currentTime;
@@ -76,27 +87,27 @@ public class TutorialManager : MonoBehaviour
         if (itemRevealPanel == null) Debug.LogError("TM: Item Reveal Panel not assigned!");
         if (readyToStartPanel == null) Debug.LogError("TM: Ready To Start Panel not assigned!");
         if (trashSpawner == null) Debug.LogError("TM: Trash Spawner not assigned!");
-        if (riverGenerator == null) Debug.LogWarning("TM: RiverBackgroundGenerator not assigned.");
-        if (skyscraperSpawner == null) Debug.LogWarning("TM: SkyscraperSpawner not assigned.");
         if (scoreManager == null) Debug.LogError("TM: ScoreManager not assigned!");
-        if (timerTextElement == null) Debug.LogError("TM: Timer Text Element not assigned!");
+        if (timerDisplayPanel == null) Debug.LogError("TM: Timer Display Panel not assigned!");
+        if (timerTextElement == null) Debug.LogError("TM: Timer Text Element (child of TimerDisplayPanel) not assigned!");
         if (gameOverPanel == null) Debug.LogError("TM: Game Over Panel not assigned!");
-        if (finalScoreTextElement == null) Debug.LogWarning("TM: Final Score Text Element not assigned for Game Over panel.");
+        if (scoreDisplayPanel == null) Debug.LogError("TM: Score Display Panel not assigned!");
+        if (riverGenerator == null) Debug.LogWarning("TM: RiverBackgroundGenerator not assigned.");
+        // --- Check new assignments ---
+        if (leftSkyscraperSpawner == null) Debug.LogWarning("TM: LeftSkyscraperSpawner not assigned.");
+        if (rightSkyscraperSpawner == null) Debug.LogWarning("TM: RightSkyscraperSpawner not assigned.");
+        // -----------------------------
 
 
         // Button listeners
         if (startTutorialButton != null) startTutorialButton.onClick.AddListener(StartTutorialGameplay);
         else Debug.LogError("TM: Start Tutorial Button not assigned!");
-
         if (trashButtonReveal != null) trashButtonReveal.onClick.AddListener(HandleItemChoice);
         else Debug.LogError("TM: Trash Button Reveal not assigned!");
-
         if (keepButtonReveal != null) keepButtonReveal.onClick.AddListener(HandleItemChoice);
         else Debug.LogError("TM: Keep Button Reveal not assigned!");
-
         if (startRealGameButton != null) startRealGameButton.onClick.AddListener(EndTutorialAndStartGame);
         else Debug.LogError("TM: Start Real Game Button not assigned!");
-
         if (playAgainButton != null) playAgainButton.onClick.AddListener(RestartGame);
         else Debug.LogWarning("TM: Play Again Button not assigned for Game Over panel.");
 
@@ -106,7 +117,8 @@ public class TutorialManager : MonoBehaviour
         if(itemRevealPanel != null) itemRevealPanel.SetActive(false);
         if(readyToStartPanel != null) readyToStartPanel.SetActive(false);
         if(gameOverPanel != null) gameOverPanel.SetActive(false);
-        if(timerTextElement != null) timerTextElement.gameObject.SetActive(false); // Hide timer initially
+        if(timerDisplayPanel != null) timerDisplayPanel.SetActive(false);
+        if(scoreDisplayPanel != null) scoreDisplayPanel.SetActive(false);
 
         currentPhase = GamePhase.ShowingWelcome;
     }
@@ -121,7 +133,7 @@ public class TutorialManager : MonoBehaviour
             if (currentTime <= 0)
             {
                 currentTime = 0;
-                UpdateTimerDisplay(); // Ensure it shows 0
+                UpdateTimerDisplay();
                 TriggerGameOver();
             }
         }
@@ -135,7 +147,7 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public void AddTimeClock(float timeToAdd) // This method must be public and spelled correctly
+    public void AddTimeToClock(float timeToAdd)
     {
         if (isGameTimerRunning && currentPhase == GamePhase.MainGamePlaying)
         {
@@ -145,7 +157,7 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public void BeginTutorialSequence() // Called by StartMenuManager
+    public void BeginTutorialSequence()
     {
         if (welcomePanel != null) welcomePanel.SetActive(false);
         if (tutorialIntroPanel != null) tutorialIntroPanel.SetActive(true);
@@ -154,9 +166,11 @@ public class TutorialManager : MonoBehaviour
         Debug.Log("TM: Showing Tutorial Intro Panel. Time.timeScale = 0");
         SetGameplayScriptsActive(false, false);
         if (trashSpawner != null) trashSpawner.enabled = false;
+        if (scoreDisplayPanel != null) scoreDisplayPanel.SetActive(false);
+        if (timerDisplayPanel != null) timerDisplayPanel.SetActive(false);
     }
 
-    public void StartTutorialGameplay() // Called by "Let's Go!" on TutorialIntroPanel
+    public void StartTutorialGameplay()
     {
         if(tutorialIntroPanel != null) tutorialIntroPanel.SetActive(false);
         currentPhase = GamePhase.TutorialPlaying;
@@ -169,8 +183,20 @@ public class TutorialManager : MonoBehaviour
             trashSpawner.enabled = true;
             trashSpawner.StartTutorialSpawning(tutorialItems);
         }
+        // Enable backgrounds for tutorial gameplay
         if (riverGenerator != null) riverGenerator.enabled = true;
-        if (skyscraperSpawner != null) skyscraperSpawner.enabled = true;
+        // --- Enable both skyscraper spawners ---
+        if (leftSkyscraperSpawner != null)
+        {
+            leftSkyscraperSpawner.enabled = true;
+            Debug.Log("TutorialManager: Enabling LeftSkyscraperSpawner for tutorial.");
+        }
+        if (rightSkyscraperSpawner != null)
+        {
+            rightSkyscraperSpawner.enabled = true;
+            Debug.Log("TutorialManager: Enabling RightSkyscraperSpawner for tutorial.");
+        }
+        // ---------------------------------------
     }
 
     public void ShadowClicked(TutorialItemData itemData)
@@ -178,8 +204,6 @@ public class TutorialManager : MonoBehaviour
         if (currentPhase != GamePhase.TutorialPlaying) return;
         currentPhase = GamePhase.ShowingItemReveal;
         Time.timeScale = 0f;
-        Debug.Log($"TM: Shadow clicked for {itemData.itemName}. Time.timeScale = 0");
-
         if (itemImageReveal != null) itemImageReveal.sprite = itemData.revealedSprite;
         if (itemNameReveal != null) itemNameReveal.text = itemData.itemName;
         if (itemDescriptionReveal != null) itemDescriptionReveal.text = itemData.itemDescription;
@@ -197,22 +221,21 @@ public class TutorialManager : MonoBehaviour
             currentPhase = GamePhase.ShowingReadyToStart;
             if(readyToStartPanel != null) readyToStartPanel.SetActive(true);
             Time.timeScale = 0f;
-            Debug.Log("TM: Tutorial items complete. Showing ReadyToStartPanel.");
             if (trashSpawner != null)
             {
                 trashSpawner.StopSpawning();
                 trashSpawner.enabled = false;
             }
+            // Backgrounds will pause due to Time.timeScale = 0f
         }
         else
         {
             currentPhase = GamePhase.TutorialPlaying;
             Time.timeScale = 1f;
-            Debug.Log("TM: Continuing tutorial. Time.timeScale = 1");
         }
     }
 
-    public void EndTutorialAndStartGame() // Called by "Start Game!" on ReadyToStartPanel
+    public void EndTutorialAndStartGame()
     {
         if(readyToStartPanel != null) readyToStartPanel.SetActive(false);
         currentPhase = GamePhase.MainGamePlaying;
@@ -223,10 +246,11 @@ public class TutorialManager : MonoBehaviour
 
         currentTime = gameTimeLimit;
         isGameTimerRunning = true;
-        if(timerTextElement != null) timerTextElement.gameObject.SetActive(true);
+        if(timerDisplayPanel != null) timerDisplayPanel.SetActive(true);
+        if(scoreDisplayPanel != null) scoreDisplayPanel.SetActive(true);
         UpdateTimerDisplay();
 
-        SetGameplayScriptsActive(true, true);
+        SetGameplayScriptsActive(true, true); // This will now enable both skyscraper spawners
 
         if (trashSpawner != null)
         {
@@ -238,12 +262,9 @@ public class TutorialManager : MonoBehaviour
     private void TriggerGameOver()
     {
         if (currentPhase == GamePhase.GameOver) return;
-
         currentPhase = GamePhase.GameOver;
         isGameTimerRunning = false;
         Time.timeScale = 0f;
-        Debug.Log("TM: Game Over! Time.timeScale = 0");
-
         SetGameplayScriptsActive(false, false);
         if (trashSpawner != null) trashSpawner.StopSpawning();
 
@@ -255,6 +276,8 @@ public class TutorialManager : MonoBehaviour
             }
             gameOverPanel.SetActive(true);
         }
+        if(timerDisplayPanel != null) timerDisplayPanel.SetActive(false);
+        if(scoreDisplayPanel != null) scoreDisplayPanel.SetActive(false);
     }
 
     private void RestartGame()
@@ -264,6 +287,7 @@ public class TutorialManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    // Helper function to enable/disable main gameplay-related scripts
     private void SetGameplayScriptsActive(bool isActive, bool includeBackgroundGenerators)
     {
         Debug.Log($"TM: Setting gameplay scripts active: {isActive}, Include Backgrounds: {includeBackgroundGenerators}");
@@ -275,13 +299,20 @@ public class TutorialManager : MonoBehaviour
                 riverGenerator.enabled = isActive;
                 Debug.Log($"-- RiverBackgroundGenerator.enabled set to {isActive}");
             }
-            if (skyscraperSpawner != null)
+            // --- MODIFIED to handle both spawners ---
+            if (leftSkyscraperSpawner != null)
             {
-                skyscraperSpawner.enabled = isActive;
-                Debug.Log($"-- SkyscraperSpawner.enabled set to {isActive}");
+                leftSkyscraperSpawner.enabled = isActive;
+                Debug.Log($"-- LeftSkyscraperSpawner.enabled set to {isActive}");
             }
+            if (rightSkyscraperSpawner != null)
+            {
+                rightSkyscraperSpawner.enabled = isActive;
+                Debug.Log($"-- RightSkyscraperSpawner.enabled set to {isActive}");
+            }
+            // ----------------------------------------
         }
-        if (trashSpawner != null && !isActive) // Ensure trash spawner is also disabled if globally deactivating
+        if (trashSpawner != null && !isActive)
         {
             trashSpawner.enabled = false;
              Debug.Log($"-- TrashSpawner.enabled set to {isActive} (via global deactivation)");

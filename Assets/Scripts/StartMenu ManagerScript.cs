@@ -1,93 +1,84 @@
 using UnityEngine;
 using UnityEngine.UI; // Required for Button
-// using UnityEngine.SceneManagement; // Optional: If you want to load a different scene
 
 public class StartMenuManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    [Tooltip("Assign the main panel for the start menu here.")]
-    [SerializeField] private GameObject startMenuPanel;
-    [Tooltip("Assign the Start Button here.")]
+    [Tooltip("Assign the main panel for the start menu/welcome screen here.")]
+    [SerializeField] private GameObject welcomePanel; // This is the first panel the player sees
+    [Tooltip("Assign the Start Button from the Welcome Panel here.")]
     [SerializeField] private Button startButton;
 
-    [Header("Gameplay Managers to Control")]
-    [Tooltip("Assign the GameObject that has the TrashSpawner script.")]
-    [SerializeField] private TrashSpawner trashSpawner;
-    [Tooltip("Assign the GameObject that has the RiverBackgroundGenerator script.")]
-    [SerializeField] private RiverBackgroundGenerator riverBackgroundGenerator;
-    [Tooltip("Assign the GameObject that has the SkyscraperSpawner script.")]
-    [SerializeField] private SkyscraperSpawner skyscraperSpawner;
-    [Header("Tutorial Control")]
+    [Header("Tutorial Integration")]
+    [Tooltip("Assign your TutorialManager GameObject here.")]
     [SerializeField] private TutorialManager tutorialManager;
-    // [SerializeField] private PlayerController playerController;
 
+    // Note: References to individual gameplay managers (TrashSpawner, RiverBackgroundGenerator, etc.)
+    // have been removed as TutorialManager will now handle their states.
 
     void Start()
     {
-        if (startMenuPanel != null)
+        // Ensure the welcome panel is visible when the game begins
+        if (welcomePanel != null)
         {
-            Debug.Log("StartMenuManager: Activating Start Menu Panel in Start().");
-            startMenuPanel.SetActive(true);
+            welcomePanel.SetActive(true);
         }
         else
         {
-            Debug.LogError("StartMenuManager: Start Menu Panel is NOT ASSIGNED in the Inspector for Start()!");
+            Debug.LogError("StartMenuManager: Welcome Panel is not assigned!");
         }
 
-        Time.timeScale = 0f;
+        // Pause game logic initially
+        Time.timeScale = 0f; // Pauses physics, FixedUpdate, and time-dependent operations
 
+        // Add a listener to the start button's onClick event
         if (startButton != null)
         {
-            startButton.onClick.AddListener(StartGame);
+            startButton.onClick.AddListener(InitiateTutorialOrGame);
         }
         else
         {
-            Debug.LogError("StartMenuManager: Start Button is NOT ASSIGNED in the Inspector!");
+            Debug.LogError("StartMenuManager: Start Button is not assigned!");
         }
 
-        SetGameplayScriptsActive(false);
+        // Ensure TutorialManager is assigned
+        if (tutorialManager == null)
+        {
+            Debug.LogError("StartMenuManager: TutorialManager is not assigned! Tutorial sequence cannot be started.");
+        }
     }
 
-   public void StartGame() // This is in StartMenuManager.cs
-{
-    Debug.Log("StartMenuManager: Start Game button clicked! Beginning tutorial sequence.");
-
-    if (startMenuPanel != null)
+    public void InitiateTutorialOrGame()
     {
-        startMenuPanel.SetActive(false); // Hide the initial welcome panel
+        Debug.Log("StartMenuManager: Start Button clicked!");
+
+        if (tutorialManager != null)
+        {
+            // Hide the welcome panel (TutorialManager might also do this, but good to be explicit)
+            if (welcomePanel != null)
+            {
+                welcomePanel.SetActive(false);
+            }
+            tutorialManager.BeginTutorialSequence(); // Hand off to TutorialManager
+        }
+        else
+        {
+            Debug.LogError("StartMenuManager: TutorialManager not assigned! Cannot begin tutorial. Check Inspector assignments.");
+            // As a fallback, if no tutorial manager, you might want to directly start the game
+            // For example:
+            // Time.timeScale = 1f;
+            // if (welcomePanel != null) welcomePanel.SetActive(false);
+            // Enable your main game scripts here if TutorialManager is missing
+        }
     }
 
-    if (tutorialManager != null)
-    {
-        tutorialManager.BeginTutorialSequence(); // Tell TutorialManager to take over
-    }
-    else
-    {
-        Debug.LogError("StartMenuManager: TutorialManager not assigned! Cannot start tutorial.");
-        // Fallback: Directly start the game if tutorial manager is missing (optional)
-        // Time.timeScale = 1f;
-        // SetGameplayScriptsActive(true);
-    }
-    // Time.timeScale and SetGameplayScriptsActive will now be handled by TutorialManager
-}
-    private void SetGameplayScriptsActive(bool isActive)
-    {
-        if (trashSpawner != null) trashSpawner.enabled = isActive;
-        // else Debug.LogWarning("StartMenuManager: TrashSpawner not assigned."); // Can be spammy
-
-        if (riverBackgroundGenerator != null) riverBackgroundGenerator.enabled = isActive;
-        // else Debug.LogWarning("StartMenuManager: RiverBackgroundGenerator not assigned.");
-
-        if (skyscraperSpawner != null) skyscraperSpawner.enabled = isActive;
-        // else Debug.LogWarning("StartMenuManager: SkyscraperSpawner not assigned.");
-    }
-
+    // Optional: If you add a Quit button to this initial welcome panel
     public void QuitGame()
     {
-        Debug.Log("Quit Game button clicked!");
+        Debug.Log("StartMenuManager: Quit Game button clicked!");
         Application.Quit();
         #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+        UnityEditor.EditorApplication.isPlaying = false; // Stops play mode in the editor
         #endif
     }
 }
