@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4b720a8a7275447db97b97e2436ecc8f
+guid: 625d1bf4e984748f2b8dce31077387ba
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 754634862155976696
-    second: Square Pop Up Final_0
+      213: -3375445372007358357
+    second: wave2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 30
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Square Pop Up Final_0
+      name: wave2_0
       rect:
         serializedVersion: 2
-        x: 145
-        y: 317
-        width: 790
-        height: 716
+        x: 71
+        y: 125
+        width: 32
+        height: 38
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ffceeda860097a00800000000000000
-      internalID: 754634862155976696
+      spriteID: b60e3ca61520821d0800000000000000
+      internalID: -3375445372007358357
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Square Pop Up Final_0: 754634862155976696
+      wave2_0: -3375445372007358357
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

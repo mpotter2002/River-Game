@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Carp Asset_0: 75948609085515947
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
