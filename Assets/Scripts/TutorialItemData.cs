@@ -11,5 +11,6 @@ public class TutorialItemData
     public string itemDescription = "Some interesting facts about this item...";
     public Sprite shadowSprite; // Assign the shadow version of the item
     public Sprite revealedSprite; // Assign the actual item sprite
+    public bool isWildlife = false; // True if this item should be "kept" not "trashed"
     // You could add more fields here, e.g., points for trashing/keeping in the real game
 }

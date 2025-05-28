@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9108475518920176667}
   m_Layer: 0
   m_Name: DIvyBike
-  m_TagString: Untagged
+  m_TagString: RealTrashItem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

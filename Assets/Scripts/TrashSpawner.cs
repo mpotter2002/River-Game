@@ -139,6 +139,7 @@ public class TrashSpawner : MonoBehaviour
             tutorialDataForThisItem = currentTutorialItems[nextTutorialItemIndex];
             if (tutorialDataForThisItem.shadowSprite != null) {
                 GameObject shadowGO = new GameObject("TutorialShadow_" + tutorialDataForThisItem.itemName);
+                shadowGO.tag = "TutorialShadowItem";
                 SpriteRenderer sr = shadowGO.AddComponent<SpriteRenderer>();
                 sr.sprite = tutorialDataForThisItem.shadowSprite;
                 sr.sortingLayerName = "Default"; sr.sortingOrder = 2;

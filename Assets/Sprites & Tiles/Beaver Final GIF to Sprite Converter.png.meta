@@ -1,0 +1,442 @@
+fileFormatVersion: 2
+guid: 4c5c09e353da842019e73d60245aa393
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8144552226898961845
+    second: Beaver Final GIF to Sprite Converter_0
+  - first:
+      213: 6960320758803582161
+    second: Beaver Final GIF to Sprite Converter_1
+  - first:
+      213: 4835201333299237718
+    second: Beaver Final GIF to Sprite Converter_2
+  - first:
+      213: 7403147967202284274
+    second: Beaver Final GIF to Sprite Converter_3
+  - first:
+      213: 2405421799892359122
+    second: Beaver Final GIF to Sprite Converter_4
+  - first:
+      213: 2282594981940857006
+    second: Beaver Final GIF to Sprite Converter_5
+  - first:
+      213: -2471959526382235730
+    second: Beaver Final GIF to Sprite Converter_6
+  - first:
+      213: -98039833656437787
+    second: Beaver Final GIF to Sprite Converter_7
+  - first:
+      213: -8870870532475256558
+    second: Beaver Final GIF to Sprite Converter_8
+  - first:
+      213: 5750780825570792969
+    second: Beaver Final GIF to Sprite Converter_9
+  - first:
+      213: 8643122783358941567
+    second: Beaver Final GIF to Sprite Converter_10
+  - first:
+      213: -373755220298470436
+    second: Beaver Final GIF to Sprite Converter_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 20
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_0
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4a121db6ecb8fe80800000000000000
+      internalID: -8144552226898961845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_1
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dcc34f4ad6089060800000000000000
+      internalID: 6960320758803582161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_2
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 653dbc0aef51a1340800000000000000
+      internalID: 4835201333299237718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f25fb44ad34db660800000000000000
+      internalID: 7403147967202284274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_4
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d7909de166c16120800000000000000
+      internalID: 2405421799892359122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_5
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea88ca8da086daf10800000000000000
+      internalID: 2282594981940857006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_6
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaf08d268e5d1bdd0800000000000000
+      internalID: -2471959526382235730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_7
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e3d11d6a41b3aef0800000000000000
+      internalID: -98039833656437787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_8
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2110557204654e480800000000000000
+      internalID: -8870870532475256558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_9
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 906564121b0eecf40800000000000000
+      internalID: 5750780825570792969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_10
+      rect:
+        serializedVersion: 2
+        x: 1036
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f79f134d06a82f770800000000000000
+      internalID: 8643122783358941567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaver Final GIF to Sprite Converter_11
+      rect:
+        serializedVersion: 2
+        x: 1136
+        y: 32
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdb692d7b9720daf0800000000000000
+      internalID: -373755220298470436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2e0476349dfb34b8fb1c8f61d644546f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Beaver Final GIF to Sprite Converter_0: -8144552226898961845
+      Beaver Final GIF to Sprite Converter_1: 6960320758803582161
+      Beaver Final GIF to Sprite Converter_10: 8643122783358941567
+      Beaver Final GIF to Sprite Converter_11: -373755220298470436
+      Beaver Final GIF to Sprite Converter_2: 4835201333299237718
+      Beaver Final GIF to Sprite Converter_3: 7403147967202284274
+      Beaver Final GIF to Sprite Converter_4: 2405421799892359122
+      Beaver Final GIF to Sprite Converter_5: 2282594981940857006
+      Beaver Final GIF to Sprite Converter_6: -2471959526382235730
+      Beaver Final GIF to Sprite Converter_7: -98039833656437787
+      Beaver Final GIF to Sprite Converter_8: -8870870532475256558
+      Beaver Final GIF to Sprite Converter_9: 5750780825570792969
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
