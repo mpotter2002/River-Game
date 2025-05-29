@@ -9,14 +9,22 @@ public class SkyscraperSpawner : MonoBehaviour
     [SerializeField] private GameObject[] skyscraperSequencePrefabs;
     [Tooltip("The vertical height of ONE regular skyscraper chunk prefab. Assumes ALL regular sequence prefabs have this SAME height.")]
     [SerializeField] private float regularChunkHeight = 20f;
-    [Tooltip("The vertical distance (in world units) AFTER one element ends BEFORE the next element starts.")]
-    [SerializeField] private float distanceBetweenElements = 100f;
-    [Tooltip("The world Y-coordinate where the very FIRST element (regular sequence or special building if its trigger is earlier) should start spawning.")]
-    [SerializeField] private float firstElementStartY = 50f;
 
     [Header("Special One-Off Buildings")]
     [Tooltip("List of unique buildings to spawn at specific Y-coordinates.")]
     public List<SpecialBuildingInfo> specialBuildings = new List<SpecialBuildingInfo>();
+
+    [Header("Nature Phase Prefabs")]
+    [Tooltip("Assign nature-themed prefabs to spawn when the timer is low.")]
+    [SerializeField] private GameObject[] naturePrefabs;
+    [Tooltip("The vertical height of ONE nature prefab. Assumes ALL nature prefabs have this SAME height.")]
+    [SerializeField] private float natureChunkHeight = 15f;
+
+    [Header("General Spawning Settings")]
+    [Tooltip("The vertical distance (in world units) AFTER one element ends BEFORE the next element starts.")]
+    [SerializeField] private float distanceBetweenElements = 100f;
+    [Tooltip("The world Y-coordinate where the very FIRST element should start spawning.")]
+    [SerializeField] private float firstElementStartY = 50f;
 
     [Header("Despawning Settings")]
     [Tooltip("How far below the camera's bottom view edge a chunk's top edge should be before we destroy it.")]
@@ -30,19 +38,29 @@ public class SkyscraperSpawner : MonoBehaviour
     private float nextElementStartY;
     private float regularSequenceTotalHeight;
     private float cameraHalfHeight;
-    private List<GameObject> activeSkyscraperChunks = new List<GameObject>();
+    private List<GameObject> activeSpawnedChunks = new List<GameObject>();
+    private bool isSpawningHalted = false;
+    private bool isNatureModeActive = false;
 
     void Start()
     {
         Debug.Log($"SkyscraperSpawner '{gameObject.name}': Start() initiated.");
+        
+        bool canSpawnRegular = skyscraperSequencePrefabs != null && skyscraperSequencePrefabs.Length > 0;
+        bool canSpawnSpecial = specialBuildings != null && specialBuildings.Count > 0;
+        bool canSpawnNature = naturePrefabs != null && naturePrefabs.Length > 0;
 
-        if ((skyscraperSequencePrefabs == null || skyscraperSequencePrefabs.Length == 0) && (specialBuildings == null || specialBuildings.Count == 0)) {
-            Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': No Regular OR Special Building Prefabs assigned. Spawner will be disabled.");
-            enabled = false; return;
+        if (!canSpawnRegular && !canSpawnSpecial && !canSpawnNature) {
+            Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': No Regular, Special, OR Nature Prefabs assigned. Spawner will be disabled if it remains enabled.");
+            return;
         }
-        if (regularChunkHeight <= 0 && (skyscraperSequencePrefabs != null && skyscraperSequencePrefabs.Length > 0) ) {
+        if (canSpawnRegular && regularChunkHeight <= 0) {
             Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Regular Chunk Height must be a positive value if regular sequences are used! Disabling spawner."); enabled = false; return;
         }
+        if (canSpawnNature && natureChunkHeight <= 0) {
+            Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Nature Chunk Height must be a positive value if nature prefabs are used! Disabling spawner."); enabled = false; return;
+        }
+
         if (mainCamera == null) {
             mainCamera = Camera.main;
             if (mainCamera == null) {
@@ -51,190 +69,237 @@ public class SkyscraperSpawner : MonoBehaviour
         }
         Debug.Log($"SkyscraperSpawner '{gameObject.name}': Main Camera assigned: {mainCamera.name}");
 
-        if (skyscraperSequencePrefabs != null && skyscraperSequencePrefabs.Length > 0) {
+        if (canSpawnRegular) {
             regularSequenceTotalHeight = skyscraperSequencePrefabs.Length * regularChunkHeight;
-            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Regular Sequence Total Height calculated: {regularSequenceTotalHeight} (Count: {skyscraperSequencePrefabs.Length}, ChunkHeight: {regularChunkHeight})");
-            if (regularSequenceTotalHeight <= 0) {
-                 Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': Regular sequence total height is zero or negative. Regular sequences may not spawn correctly.");
-            }
+            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Regular Sequence Total Height calculated: {regularSequenceTotalHeight}");
         } else {
             regularSequenceTotalHeight = 0;
-            Debug.Log($"SkyscraperSpawner '{gameObject.name}': No regular skyscraper sequence prefabs assigned.");
         }
 
-        if (specialBuildings != null && specialBuildings.Count > 0) {
-            specialBuildings = specialBuildings.OrderBy(sb => sb.triggerWorldY).ToList();
-            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Sorted {specialBuildings.Count} special buildings by trigger Y.");
-            foreach (var sb in specialBuildings) {
-                sb.hasSpawned = false; // Ensure reset at start
-                // <<< MODIFIED LOG to explicitly show hasSpawned after reset >>>
-                Debug.Log($"  - Special Building Entry: '{sb.buildingName}', TriggerY: {sb.triggerWorldY}, Height: {sb.buildingHeight}, Prefab Assigned: {sb.prefab != null}, Initial hasSpawned state: {sb.hasSpawned}");
-            }
+        nextElementStartY = firstElementStartY; // Initialize here
+        if (mainCamera != null) {
+             cameraHalfHeight = mainCamera.orthographicSize;
         } else {
-            Debug.Log($"SkyscraperSpawner '{gameObject.name}': No special buildings assigned (list might be null or empty).");
+            enabled = false; return;
         }
-
-        nextElementStartY = firstElementStartY;
-        cameraHalfHeight = mainCamera.orthographicSize;
-        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Initial nextElementStartY = {nextElementStartY:F2}, CameraHalfHeight = {cameraHalfHeight:F2}");
-        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Start() completed successfully.");
+        ResumeSpawning(); // Call this to set initial flags, reset special buildings, and set nextElementStartY
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Start() completed. Initial nextElementStartY = {nextElementStartY:F2}, CameraHalfHeight = {cameraHalfHeight:F2}, NatureMode: {isNatureModeActive}, Halted: {isSpawningHalted}");
     }
+    
+    void OnEnable()
+    {
+        // When re-enabled (e.g. by TutorialManager), ensure a clean state.
+        // Start() will have done initial setup if it's the first enable.
+        // If re-enabled after being disabled mid-game, ResumeSpawning() is more appropriate
+        // to reset gameplay-specific states like 'hasSpawned' flags and nextElementStartY.
+        // TutorialManager should call ResumeSpawning explicitly when it wants this spawner to start fresh.
+        // For now, we'll rely on Start() for initial setup and TutorialManager calls for resets.
+    }
+
 
     void Update()
     {
-        if (!mainCamera) return; // Stop if no camera
-        // Debug.Log($"SkyscraperSpawner '{gameObject.name}': Update. CameraY: {mainCamera.transform.position.y:F2}");
-        CheckAndSpawnNextElement();
+        if (!mainCamera || !enabled) return;
+
+        if (!isSpawningHalted)
+        {
+            CheckAndSpawnNextElement();
+        }
         DespawnOldSkyscrapers();
+    }
+
+    public void HaltSpawning()
+    {
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Halting ALL future spawning.");
+        isSpawningHalted = true;
+    }
+
+    public void ResumeSpawning() // Called by TutorialManager to start/restart normal skyscraper operation
+    {
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Resuming/Resetting spawning state. Skyscraper mode active, Nature mode OFF.");
+        isSpawningHalted = false;
+        isNatureModeActive = false; // Default to skyscraper mode
+        
+        // --- MODIFICATION: Clear previously spawned chunks ---
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Clearing {activeSpawnedChunks.Count} previously spawned chunks.");
+        foreach (GameObject chunk in activeSpawnedChunks)
+        {
+            if (chunk != null) // Check if it hasn't been destroyed already
+            {
+                Destroy(chunk);
+            }
+        }
+        activeSpawnedChunks.Clear();
+        // --- END MODIFICATION ---
+
+        // Reset 'hasSpawned' for special buildings
+        if (specialBuildings != null)
+        {
+            foreach (var sb in specialBuildings)
+            {
+                sb.hasSpawned = false;
+            }
+            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Special buildings 'hasSpawned' flags reset.");
+        }
+
+        nextElementStartY = firstElementStartY;
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': nextElementStartY reset to firstElementStartY: {firstElementStartY:F2}");
+    }
+
+    public void SwitchToNatureMode(bool enableNature)
+    {
+        Debug.Log($"SkyscraperSpawner '{gameObject.name}': Switching Nature Mode to: {enableNature}");
+        isNatureModeActive = enableNature;
+        if (enableNature)
+        {
+            isSpawningHalted = false; // Ensure spawning can happen if switching TO nature mode
+            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Nature mode ON. Will spawn nature prefabs. Current nextElementStartY: {nextElementStartY:F2}");
+        }
+        else
+        {
+             Debug.Log($"SkyscraperSpawner '{gameObject.name}': Nature mode OFF. Will revert to skyscrapers/special.");
+        }
     }
 
     void CheckAndSpawnNextElement()
     {
+        if (isSpawningHalted) return;
+
         float cameraY = mainCamera.transform.position.y;
         float cameraVisibleTopY = cameraY + cameraHalfHeight;
-        float spawnLookaheadBuffer = regularChunkHeight > 0 ? regularChunkHeight : 20f;
-        if (regularChunkHeight <= 0 && specialBuildings != null && specialBuildings.Count > 0) {
-            SpecialBuildingInfo nextSpecial = specialBuildings.FirstOrDefault(sb => !sb.hasSpawned && sb.buildingHeight > 0);
-            if (nextSpecial != null) spawnLookaheadBuffer = nextSpecial.buildingHeight;
+
+        float currentChunkHeightForLookahead;
+        if (isNatureModeActive) {
+            currentChunkHeightForLookahead = natureChunkHeight > 0 ? natureChunkHeight : 20f;
+        } else {
+            currentChunkHeightForLookahead = regularChunkHeight > 0 ? regularChunkHeight : 20f;
+            if (regularChunkHeight <= 0 && specialBuildings != null && specialBuildings.Count > 0) {
+                SpecialBuildingInfo nextSpecial = specialBuildings.FirstOrDefault(sb => !sb.hasSpawned && sb.buildingHeight > 0);
+                if (nextSpecial != null) currentChunkHeightForLookahead = nextSpecial.buildingHeight;
+            }
         }
-        float cameraTriggerY = cameraVisibleTopY + spawnLookaheadBuffer;
+        float cameraTriggerY = cameraVisibleTopY + currentChunkHeightForLookahead;
 
         if (cameraTriggerY >= nextElementStartY)
         {
-            Debug.Log($"SkyscraperSpawner '{gameObject.name}': === SPAWN OPPORTUNITY! CameraTriggerY ({cameraTriggerY:F2}) >= nextElementStartY ({nextElementStartY:F2}) ===");
             bool elementSpawnedThisCycle = false;
+            GameObject spawnedElementRoot = null; // Used to add to activeSpawnedChunks if it's a single object
 
-            // --- 1. Check for Special Buildings first ---
-            if (specialBuildings != null)
+            if (isNatureModeActive)
             {
-                Debug.Log($"SkyscraperSpawner '{gameObject.name}': Checking special buildings. Count: {specialBuildings.Count}");
-
-                for (int i = 0; i < specialBuildings.Count; i++)
+                if (naturePrefabs != null && naturePrefabs.Length > 0)
                 {
-                    SpecialBuildingInfo specialBuilding = specialBuildings[i];
-                    Debug.Log($"  SkyscraperSpawner '{gameObject.name}': Considering Special: '{specialBuilding.buildingName}', Spawned: {specialBuilding.hasSpawned}, CamY: {cameraY:F2}, TriggerY: {specialBuilding.triggerWorldY:F2}");
-
-                    if (!specialBuilding.hasSpawned && cameraY >= specialBuilding.triggerWorldY)
+                    int randomIndex = Random.Range(0, naturePrefabs.Length);
+                    GameObject prefabToSpawn = naturePrefabs[randomIndex];
+                    if (prefabToSpawn != null)
                     {
-                        if (specialBuilding.triggerWorldY <= nextElementStartY + spawnLookaheadBuffer)
+                        if (natureChunkHeight <= 0) { Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Nature Chunk Height is invalid for {prefabToSpawn.name}. Cannot spawn precisely."); return; }
+                        Vector3 spawnPos = new Vector3(transform.position.x, nextElementStartY, transform.position.z);
+                        spawnedElementRoot = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity, transform);
+                        activeSpawnedChunks.Add(spawnedElementRoot); // Add nature chunk
+                        nextElementStartY += natureChunkHeight + distanceBetweenElements;
+                        elementSpawnedThisCycle = true;
+                    } else Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': Nature prefab at index {randomIndex} is null.");
+                } else Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': In Nature Mode, but no naturePrefabs assigned or list is empty.");
+            }
+            else 
+            {
+                if (specialBuildings != null && !elementSpawnedThisCycle)
+                {
+                    for (int i = 0; i < specialBuildings.Count; i++)
+                    {
+                        SpecialBuildingInfo specialBuilding = specialBuildings[i];
+                        if (!specialBuilding.hasSpawned && cameraY >= specialBuilding.triggerWorldY)
                         {
-                            if (specialBuilding.prefab == null) {
-                                Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Special building '{specialBuilding.buildingName}' has NO PREFAB assigned! Marking as spawned to avoid repeat errors.");
+                            if (specialBuilding.triggerWorldY <= nextElementStartY + currentChunkHeightForLookahead)
+                            {
+                                if (specialBuilding.prefab == null || specialBuilding.buildingHeight <= 0) {
+                                     Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Special building '{specialBuilding.buildingName}' misconfigured. Marking as spawned.");
+                                     specialBuildings[i].hasSpawned = true; continue;
+                                }
+                                Vector3 spawnPos = new Vector3(transform.position.x, nextElementStartY, transform.position.z);
+                                spawnedElementRoot = Instantiate(specialBuilding.prefab, spawnPos, Quaternion.identity, transform);
+                                activeSpawnedChunks.Add(spawnedElementRoot); // Add special building
                                 specialBuildings[i].hasSpawned = true;
-                                continue;
+                                nextElementStartY += specialBuilding.buildingHeight + distanceBetweenElements;
+                                elementSpawnedThisCycle = true;
+                                break;
                             }
-                            if (specialBuilding.buildingHeight <= 0) {
-                                Debug.LogError($"SkyscraperSpawner '{gameObject.name}': Special building '{specialBuilding.buildingName}' has invalid height {specialBuilding.buildingHeight}! Skipping and marking as spawned.");
-                                specialBuildings[i].hasSpawned = true;
-                                continue;
-                            }
-
-                            Debug.Log($"SkyscraperSpawner '{gameObject.name}': Spawning SPECIAL Building '{specialBuilding.buildingName}' (Height: {specialBuilding.buildingHeight}) at Y: {nextElementStartY}");
-                            Vector3 spawnPos = new Vector3(transform.position.x, nextElementStartY, transform.position.z);
-                            GameObject newSpecialChunk = Instantiate(specialBuilding.prefab, spawnPos, Quaternion.identity, transform);
-                            Debug.Log("newSpecialChunk: " + newSpecialChunk.name);
-                            activeSkyscraperChunks.Add(newSpecialChunk);
-
-                            specialBuildings[i].hasSpawned = true;
-                            nextElementStartY += specialBuilding.buildingHeight + distanceBetweenElements;
-                            Debug.Log($"SkyscraperSpawner '{gameObject.name}': After SPECIAL '{specialBuilding.buildingName}', new nextElementStartY = {nextElementStartY:F2}");
-                            elementSpawnedThisCycle = true;
-                            break;
                         }
-                        else
-                        {
-                            Debug.Log($"  SkyscraperSpawner '{gameObject.name}': Special Building '{specialBuilding.buildingName}' triggerY ({specialBuilding.triggerWorldY:F2}) is too far ahead of current nextElementStartY ({nextElementStartY:F2} + buffer). Waiting for nextElementStartY to catch up.");
-                        }
-                    }
-                    else if (specialBuilding.hasSpawned)
-                    {
-                        // This log is fine for already spawned items
-                        // Debug.Log($"  SkyscraperSpawner '{gameObject.name}': Special Building '{specialBuilding.buildingName}' has already spawned.");
-                    }
-                    else if (cameraY < specialBuilding.triggerWorldY)
-                    {
-                        Debug.Log($"  SkyscraperSpawner '{gameObject.name}': Special Building '{specialBuilding.buildingName}' not triggered yet. CamY ({cameraY:F2}) < TriggerY ({specialBuilding.triggerWorldY:F2}).");
                     }
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': specialBuildings list is NULL. Cannot check for special buildings.");
-            }
 
-
-            // --- 2. If no special building was spawned this cycle, try spawning a regular sequence ---
-            if (!elementSpawnedThisCycle)
-            {
-                Debug.Log($"SkyscraperSpawner '{gameObject.name}': No special building spawned this cycle. Checking for regular sequence.");
-                if (skyscraperSequencePrefabs != null && skyscraperSequencePrefabs.Length > 0 && regularSequenceTotalHeight > 0)
+                if (!elementSpawnedThisCycle && skyscraperSequencePrefabs != null && skyscraperSequencePrefabs.Length > 0 && regularSequenceTotalHeight > 0)
                 {
-                    Debug.Log($"SkyscraperSpawner '{gameObject.name}': Spawning REGULAR sequence (Total Height: {regularSequenceTotalHeight}) at Y: {nextElementStartY}");
-                    SpawnRegularSkyscraperSequence(nextElementStartY);
+                    SpawnRegularSkyscraperSequence(nextElementStartY); // This method adds to activeSpawnedChunks
                     nextElementStartY += regularSequenceTotalHeight + distanceBetweenElements;
-                    Debug.Log($"SkyscraperSpawner '{gameObject.name}': After REGULAR sequence, new nextElementStartY = {nextElementStartY:F2}");
+                    elementSpawnedThisCycle = true; // Mark that a regular sequence was initiated
                 }
-                else if (specialBuildings == null || specialBuildings.All(sb => sb.hasSpawned))
-                {
-                     if ((specialBuildings == null || specialBuildings.Count == 0) && (skyscraperSequencePrefabs == null || skyscraperSequencePrefabs.Length == 0) )
-                     {
-                         Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': No regular sequences AND no special buildings defined. Spawner might be finished or misconfigured.");
-                         nextElementStartY = cameraTriggerY + spawnLookaheadBuffer;
-                     }
-                     else if (skyscraperSequencePrefabs == null || skyscraperSequencePrefabs.Length == 0) {
-                        Debug.Log($"SkyscraperSpawner '{gameObject.name}': No regular sequences defined, and all special buildings spawned (or none to begin with). Waiting for nextElementStartY to advance if camera keeps moving.");
-                     }
-                }
+            }
+
+            if (elementSpawnedThisCycle) { // Check if anything was actually spawned or sequence initiated
+                Debug.Log($"SkyscraperSpawner '{gameObject.name}': After spawn attempt, new nextElementStartY = {nextElementStartY:F2}");
+            } else if (!elementSpawnedThisCycle) {
+                 bool noRegular = skyscraperSequencePrefabs == null || skyscraperSequencePrefabs.Length == 0 || regularSequenceTotalHeight <=0;
+                 bool allSpecialDone = specialBuildings == null || specialBuildings.All(sb => sb.hasSpawned);
+                 bool noNature = naturePrefabs == null || naturePrefabs.Length == 0;
+                 if (isNatureModeActive && noNature) {
+                     Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': In Nature Mode, but no Nature Prefabs to spawn. Advancing nextElementStartY.");
+                 } else if (!isNatureModeActive && noRegular && allSpecialDone) {
+                     Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': No regular sequences and all special buildings done. Spawning will effectively stop unless Nature Mode is triggered. Advancing nextElementStartY.");
+                 }
+                 if (!elementSpawnedThisCycle) { // Still nothing spawned
+                    nextElementStartY = cameraTriggerY + currentChunkHeightForLookahead / 2f; // Push it a bit ahead to avoid tight loop
+                 }
             }
         }
     }
 
-    void SpawnRegularSkyscraperSequence(float startY)
+    List<GameObject> SpawnRegularSkyscraperSequence(float startY)
     {
-        // Debug.Log($"  SpawnRegularSkyscraperSequence: Starting regular sequence at Y={startY:F2} for '{gameObject.name}'");
+        List<GameObject> spawnedSequenceChunks = new List<GameObject>();
         for (int i = 0; i < skyscraperSequencePrefabs.Length; i++)
         {
             GameObject prefabToSpawn = skyscraperSequencePrefabs[i];
-            if (prefabToSpawn == null) {
-                Debug.LogWarning($"SkyscraperSpawner '{gameObject.name}': Regular sequence prefab at index {i} is null. Skipping.");
-                continue;
-            }
+            if (prefabToSpawn == null) continue;
             float spawnY = startY + (i * regularChunkHeight);
             Vector3 spawnPos = new Vector3(transform.position.x, spawnY, transform.position.z);
-            // Debug.Log($"    Spawning regular chunk {i+1}/{skyscraperSequencePrefabs.Length}: {prefabToSpawn.name} at Y: {spawnY:F2}");
             GameObject newRegularChunk = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity, transform);
-            activeSkyscraperChunks.Add(newRegularChunk);
+            activeSpawnedChunks.Add(newRegularChunk); // Ensure individual sequence chunks are added
+            spawnedSequenceChunks.Add(newRegularChunk);
         }
+        return spawnedSequenceChunks;
     }
 
     void DespawnOldSkyscrapers()
     {
-        if (mainCamera == null || activeSkyscraperChunks.Count == 0) return;
-
+        if (mainCamera == null || activeSpawnedChunks.Count == 0) return;
         float cameraBottomEdgeY = mainCamera.transform.position.y - cameraHalfHeight;
         float despawnTriggerY = cameraBottomEdgeY - despawnDistanceBelowCamera;
-        List<GameObject> chunksToRemove = new List<GameObject>();
-
-        foreach (GameObject chunk in activeSkyscraperChunks)
+        
+        // Iterate backwards when removing from a list during iteration
+        for (int i = activeSpawnedChunks.Count - 1; i >= 0; i--)
         {
-            if (chunk == null) continue;
-            SpriteRenderer sr = chunk.GetComponentInChildren<SpriteRenderer>();
+            GameObject chunk = activeSpawnedChunks[i];
+            if (chunk == null) { // If already destroyed by other means
+                activeSpawnedChunks.RemoveAt(i);
+                continue;
+            }
+
+            Renderer rend = chunk.GetComponentInChildren<Renderer>();
             float chunkTopEdgeY;
-            if (sr != null) {
-                chunkTopEdgeY = sr.bounds.max.y;
+            if (rend != null) {
+                chunkTopEdgeY = rend.bounds.max.y;
             } else {
-                float heightToUse = regularChunkHeight;
-                chunkTopEdgeY = chunk.transform.position.y + (heightToUse / 2f);
+                float estimatedHeight = regularChunkHeight > 0 ? regularChunkHeight : (natureChunkHeight > 0 ? natureChunkHeight : 20f);
+                chunkTopEdgeY = chunk.transform.position.y + (estimatedHeight / 2f);
             }
 
             if (chunkTopEdgeY < despawnTriggerY) {
-                chunksToRemove.Add(chunk);
+                // Debug.Log($"SkyscraperSpawner '{gameObject.name}': Despawning chunk: {chunk.name}");
+                Destroy(chunk);
+                activeSpawnedChunks.RemoveAt(i);
             }
-        }
-        foreach (GameObject chunkToRemove in chunksToRemove) {
-            activeSkyscraperChunks.Remove(chunkToRemove);
-            Destroy(chunkToRemove);
-            // Debug.Log($"SkyscraperSpawner '{gameObject.name}': Despawned skyscraper chunk: {chunkToRemove.name}");
         }
     }
 }

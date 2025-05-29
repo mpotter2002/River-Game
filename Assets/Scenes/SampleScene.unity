@@ -625,13 +625,16 @@ MonoBehaviour:
   - {fileID: 8786574894775943333, guid: c5e3d7cd8a8544fccbe68ba6df15a130, type: 3}
   - {fileID: 4541574206851928393, guid: 3982dcaace9644741b1eb7c3a1c459a3, type: 3}
   regularChunkHeight: 15
-  distanceBetweenElements: 3
-  firstElementStartY: -70
   specialBuildings:
   - buildingName: Hancock Building
     prefab: {fileID: 5834048289449353115, guid: f6c23114169514d31b33ef3b574f0d5e, type: 3}
     buildingHeight: 24
-    triggerWorldY: -35
+    triggerWorldY: 20
+  naturePrefabs:
+  - {fileID: 365842582166575569, guid: 053d66e276e15458f8d4f0321d45abcb, type: 3}
+  natureChunkHeight: 15
+  distanceBetweenElements: 3
+  firstElementStartY: -70
   despawnDistanceBelowCamera: 20
   mainCamera: {fileID: 519420031}
 --- !u!4 &183771449
@@ -643,7 +646,7 @@ Transform:
   m_GameObject: {fileID: 183771447}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.959961, y: -41.30005, z: -0.11031463}
+  m_LocalPosition: {x: 11.51, y: -4.5, z: -0.11031463}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1474,7 +1477,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18, y: -36, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1493,7 +1496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c996fa525c82442318f293b54696b461, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 0.5
+  scrollSpeed: 1
 --- !u!1 &543045822
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,13 +2039,16 @@ MonoBehaviour:
   - {fileID: 8786574894775943333, guid: dc3e7c61dbed1445ca46dec70e1ecc25, type: 3}
   - {fileID: 4541574206851928393, guid: 51dd2614c1f334701af18779695a8b34, type: 3}
   regularChunkHeight: 15
-  distanceBetweenElements: 3
-  firstElementStartY: -70
   specialBuildings:
   - buildingName: Marina Towers
     prefab: {fileID: 497708831794087478, guid: 4c3870dd543b8483b898f682249bbaea, type: 3}
     buildingHeight: 19
-    triggerWorldY: -35
+    triggerWorldY: 10
+  naturePrefabs:
+  - {fileID: 1938371736467524578, guid: cf301097247204103b142a2bcb214847, type: 3}
+  natureChunkHeight: 15
+  distanceBetweenElements: 3
+  firstElementStartY: -70
   despawnDistanceBelowCamera: 20
   mainCamera: {fileID: 519420031}
 --- !u!4 &776040132
@@ -2054,7 +2060,7 @@ Transform:
   m_GameObject: {fileID: 776040130}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.639893, y: -41.30005, z: -0.11031463}
+  m_LocalPosition: {x: -13.4, y: -3.5, z: -0.11031463}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2107,7 +2113,7 @@ Transform:
   m_GameObject: {fileID: 804899309}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -17.599976, y: -53.100098, z: -0.038642608}
+  m_LocalPosition: {x: -0.2, y: -9.7, z: -0.038642608}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2280,6 +2286,7 @@ MonoBehaviour:
   minSpawnDelay: 0.75
   maxSpawnDelay: 2
   initialDelay: 0.5
+  mainCamera: {fileID: 0}
 --- !u!1 &953266837
 GameObject:
   m_ObjectHideFlags: 0
@@ -3592,7 +3599,7 @@ Transform:
   m_GameObject: {fileID: 1267999578}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1097.7, y: -1976.3, z: 0}
+  m_LocalPosition: {x: -1080.3, y: -1939.77, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11419,7 +11426,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1573041384}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1937380161}
+        m_TargetAssemblyTypeName: TutorialManager, Assembly-CSharp
+        m_MethodName: StartTutorialGameplay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1581945571
 GameObject:
   m_ObjectHideFlags: 0
@@ -11611,7 +11630,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1592779775}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1937380161}
+        m_TargetAssemblyTypeName: TutorialManager, Assembly-CSharp
+        m_MethodName: PrepareToPlayAgain
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1592779775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12356,6 +12387,7 @@ MonoBehaviour:
   scoreManager: {fileID: 317601631}
   gameTimeLimit: 60
   divvyBikeTimeBonus: 10
+  naturePhaseTriggerTime: 30
   gameOverPanel: {fileID: 1267472816}
   finalScoreTextElement: {fileID: 543045825}
   playAgainButton: {fileID: 1592779774}
@@ -12541,7 +12573,7 @@ Transform:
   m_GameObject: {fileID: 1963816651}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1097.8286, y: -1977.5262, z: -0.09939474}
+  m_LocalPosition: {x: -1080.4287, y: -1940.9962, z: -0.09939474}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13350,7 +13382,7 @@ Transform:
   m_GameObject: {fileID: 2062028543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1097.7, y: -1976.3, z: 0}
+  m_LocalPosition: {x: -1080.3, y: -1939.77, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
