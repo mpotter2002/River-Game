@@ -77,6 +77,18 @@ public class TutorialManager : MonoBehaviour
     private bool isGameTimerRunning = false;
     private bool hasEnteredNaturePhase = false;
 
+    [Header("Camera Settings")]
+    [SerializeField] private float cameraStartY = 0f; // Set this to your camera's starting Y position in the Inspector
+
+    [Header("River Settings")]
+    [SerializeField] private float riverStartY = 0f; // Set this in the Inspector to your river's starting Y
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource musicAudioSource;
+
+    private bool isMusicMuted = false;
+
+    [SerializeField] private TMP_Text muteButtonText;
 
     public enum GamePhase
     {
@@ -187,6 +199,15 @@ public void PrepareToPlayAgain()
 
     Time.timeScale = 0f; // Pause game for the ReadyToStartPanel
 
+    if (Camera.main != null)
+    {
+        Camera.main.transform.position = new Vector3(
+            Camera.main.transform.position.x,
+            cameraStartY,
+            Camera.main.transform.position.z
+        );
+    }
+
     // Ensure all gameplay scripts are stopped/disabled before showing ReadyToStartPanel
     SetGameplayScriptsActive(false, true); // Disable River & Skyscraper spawners
     if (trashSpawner != null)
@@ -213,6 +234,11 @@ public void PrepareToPlayAgain()
     currentPhase = GamePhase.ShowingReadyToStart;
     timeSinceLastInput = 0f; // Reset inactivity timer
     Debug.Log("TM: Now showing ReadyToStartPanel. Click its button to start the main game.");
+
+    if (riverGenerator != null)
+    {
+        riverGenerator.ResetRiver(riverStartY);
+    }
 }
 // --- END NEW METHOD ---
 
@@ -597,5 +623,16 @@ public void PrepareToPlayAgain()
             trashSpawner.enabled = false;
             Debug.Log($"-- TrashSpawner.enabled set to {isActive} (via global deactivation). Actual: {trashSpawner.enabled}");
         }
+    }
+
+    public void ToggleMusicMute()
+    {
+        if (musicAudioSource == null) return;
+
+        isMusicMuted = !isMusicMuted;
+        musicAudioSource.mute = isMusicMuted;
+
+        if (muteButtonText != null)
+            muteButtonText.text = isMusicMuted ? "Unmute" : "Mute";
     }
 }

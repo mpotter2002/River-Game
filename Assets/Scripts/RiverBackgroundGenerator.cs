@@ -170,4 +170,22 @@ public class RiverBackgroundGenerator : MonoBehaviour
             // Debug.Log("RiverBackgroundGenerator: Despawned chunk."); // Optional message
         }
     }
+
+    public void ResetRiver(float newY)
+    {
+        // Destroy all active chunks
+        foreach (var chunk in activeChunks)
+        {
+            if (chunk != null) Destroy(chunk);
+        }
+        activeChunks.Clear();
+
+        // Reset position and nextSpawnY
+        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        cameraHalfHeight = mainCamera != null ? mainCamera.orthographicSize : 0f;
+        nextSpawnY = newY;
+
+        // Respawn initial chunks to fill the screen
+        SpawnInitialChunks();
+    }
 }
