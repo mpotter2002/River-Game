@@ -305,6 +305,8 @@ public void PrepareToPlayAgain()
         timeSinceLastInput = 0f;
         hasEnteredNaturePhase = false;
         isGameTimerRunning = false;
+
+        SetGameplayScriptsActive(true, true);
     }
 
     public void StartTutorialGameplay()
@@ -330,7 +332,6 @@ public void PrepareToPlayAgain()
                 trashSpawner.StartTutorialSpawning(tutorialItems[currentTutorialUniqueItemIndex]);
             } else Debug.LogError("TM: TutorialItems list is empty!");
         }
-        SetGameplayScriptsActive(true, true);
         // SetCameraScrollActive(false); // REMOVED
     }
 
