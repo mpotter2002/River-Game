@@ -266,13 +266,17 @@ public void PrepareToPlayAgain()
         }
     }
 
-    public void AddTimeToClock(float timeToAdd)
+    public void AddTimeClock(float timeToAdd)
     {
         if (isGameTimerRunning && (currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.NaturePhase))
         {
             currentTime += timeToAdd;
             UpdateTimerDisplay();
             Debug.Log($"Added {timeToAdd}s to clock. New time: {currentTime}");
+        }
+        else
+        {
+            Debug.LogWarning($"TM: AddTimeToClock called, but conditions not met. TimerRunning: {isGameTimerRunning}, Phase: {currentPhase}");
         }
     }
 

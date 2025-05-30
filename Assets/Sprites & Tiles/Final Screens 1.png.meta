@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d054bf0d458f7477d954571174800137
+guid: f7a01ebe76e264dceac6ea6bffb9091f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8887437757129554100
-    second: SearsTower 1_0
+      213: 7858084306830112851
+    second: Final Screens 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 30
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SearsTower 1_0
+      name: Final Screens 1_0
       rect:
         serializedVersion: 2
-        x: 209
-        y: 11
-        width: 176
-        height: 584
+        x: 0
+        y: 0
+        width: 1080
+        height: 1920
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4b8f91d6d85865b70800000000000000
-      internalID: 8887437757129554100
+      spriteID: 3583eab0b068d0d60800000000000000
+      internalID: 7858084306830112851
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      SearsTower 1_0: 8887437757129554100
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

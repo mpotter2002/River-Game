@@ -155,7 +155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -791}
+  m_AnchoredPosition: {x: -7, y: -833}
   m_SizeDelta: {x: 700, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &10161801
@@ -627,7 +627,7 @@ MonoBehaviour:
   regularChunkHeight: 15
   specialBuildings:
   - buildingName: Hancock Building
-    prefab: {fileID: 5834048289449353115, guid: f6c23114169514d31b33ef3b574f0d5e, type: 3}
+    prefab: {fileID: 315203321418660677, guid: 4001be8bc7354458baefddfcdb5a2d03, type: 3}
     buildingHeight: 24
     triggerWorldY: 20
   naturePrefabs:
@@ -683,14 +683,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5058824, g: 0.5803922, b: 0.9254902, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 7538933439936585670, guid: f0e4df2cf708c4719b3992d9a6bc4e78, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -765,7 +765,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 88.625046}
-  m_SizeDelta: {x: 1102.1523, y: 177.25}
+  m_SizeDelta: {x: 1346.9355, y: 177.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &233415851
 MonoBehaviour:
@@ -787,7 +787,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Oh no you don't want to keep that in the river
+  m_text: 'Oh no! You don''t want to keep that in the river. Trash harms the river. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
   m_sharedMaterial: {fileID: -3337594686683082386, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
@@ -946,7 +946,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 89, y: 0}
+  m_AnchoredPosition: {x: 518, y: -281}
   m_SizeDelta: {x: 745.3519, y: 656.7576}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &337071845
@@ -1145,7 +1145,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Oh No! You don't want to throw that out!
+  m_text: 'Oh No! The river needs wildlife to keep it healthy. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
   m_sharedMaterial: {fileID: -3337594686683082386, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
@@ -1531,7 +1531,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -289}
   m_SizeDelta: {x: 801.5332, y: 116.769}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &543045824
@@ -2593,7 +2593,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.010384, y: 375}
+  m_AnchoredPosition: {x: 0.010384, y: 475}
   m_SizeDelta: {x: 1584.5, y: 354.7966}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1020341066
@@ -2616,7 +2616,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Can you help clean up the Chicago River
+  m_text: Can you help clean up the Chicago River?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
   m_sharedMaterial: {fileID: -3337594686683082386, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
@@ -2987,7 +2987,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1249.5242, y: 243.1878}
+  m_SizeDelta: {x: 1460.928, y: 293.2571}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1051621802
 MonoBehaviour:
@@ -3009,8 +3009,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Get as much trash out of the river as you can before the time runs out.
-    Remeber don''t pick up the local wildlife '
+  m_text: "You've learned how to play. Now it\u2019s time for the real cleanup! Clean
+    up as many things that don't belong before time runs out. \n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4e77090f78114301b79388b651006ba, type: 2}
   m_sharedMaterial: {fileID: 7445007948689233632, guid: d4e77090f78114301b79388b651006ba, type: 2}
@@ -3554,7 +3554,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3328739564089015154, guid: 3b6f09cac75274856b804ea5a43372e2, type: 3}
+  m_Sprite: {fileID: 7858084306830112851, guid: f7a01ebe76e264dceac6ea6bffb9091f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11342,8 +11342,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -376.51}
-  m_SizeDelta: {x: 700, y: 124.7855}
+  m_AnchoredPosition: {x: 0, y: -459}
+  m_SizeDelta: {x: 700, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1573041384
 MonoBehaviour:
@@ -11698,7 +11698,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -467.97192}
+  m_AnchoredPosition: {x: 0, y: -553}
   m_SizeDelta: {x: 700, y: 180.8821}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1606133954
@@ -11735,7 +11735,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0024719238, y: 0.0000038146973}
+  m_AnchoredPosition: {x: -0.0024719238, y: 0}
   m_SizeDelta: {x: -0.0050659, y: 0.000015259}
   m_Pivot: {x: 0.5, y: 0.49999994}
 --- !u!114 &1606133956
@@ -12083,8 +12083,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 819}
-  m_SizeDelta: {x: 1417.5337, y: 753.3456}
+  m_AnchoredPosition: {x: 112, y: 546}
+  m_SizeDelta: {x: 790.4878, y: 556.9336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1857623986
 MonoBehaviour:
@@ -12133,8 +12133,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 200
-  m_fontSizeBase: 200
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -12359,23 +12359,31 @@ MonoBehaviour:
   timerTextElement: {fileID: 153837264}
   tutorialItems:
   - itemName: Soda Can
-    itemDescription: 'A damaged and empty soda can '
+    itemDescription: 'This is a  empty soda can. Do you want to throw it back?
+
+'
     shadowSprite: {fileID: -1465322269197020071, guid: 20eace56452044ca5bc41788f256760d, type: 3}
     revealedSprite: {fileID: 2362618192862393911, guid: 4a5c22f8af3fe43e5bfb69a16c62287e, type: 3}
     isWildlife: 0
   - itemName: Carp
-    itemDescription: A local Chicago Fish
+    itemDescription: 'This is a carp. Do you want to throw it back?
+
+'
     shadowSprite: {fileID: -1465322269197020071, guid: 20eace56452044ca5bc41788f256760d, type: 3}
     revealedSprite: {fileID: 75948609085515947, guid: cac2a615b62844839a042639475e4991, type: 3}
     isWildlife: 1
   - itemName: Beaver
-    itemDescription: They just started coming back to the river oh no put it back
-      please!
+    itemDescription: 'This is a Beaver. Do you want to throw it back?
+
+'
     shadowSprite: {fileID: -1465322269197020071, guid: 20eace56452044ca5bc41788f256760d, type: 3}
     revealedSprite: {fileID: 4253521595298799253, guid: 3ba3d6a8148c7474bb9bd8eba69f9965, type: 3}
     isWildlife: 1
   - itemName: Chip bag
-    itemDescription: A nempty Crumpled up chip bag
+    itemDescription: 'This is a empty crumpled chip bag. Do you want to throw it
+      back?
+
+'
     shadowSprite: {fileID: -1465322269197020071, guid: 20eace56452044ca5bc41788f256760d, type: 3}
     revealedSprite: {fileID: -7983006220963309503, guid: 61494fce5a24741a9b1af9a18bfd3309, type: 3}
     isWildlife: 0
@@ -12443,7 +12451,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.019737, y: -72}
+  m_AnchoredPosition: {x: 0.019737, y: -90}
   m_SizeDelta: {x: 1584.4761, y: 314.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1958724064
@@ -12466,8 +12474,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click on the shadows in the river to reveal and item and decide if that
-    item should be trash or kept in the river
+  m_text: "Let\u2019s learn how to play! Some things in the river are healthy, like
+    fish and plants. Others don\u2019t belong, like trash. Let\u2019s practice together.\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4e77090f78114301b79388b651006ba, type: 2}
   m_sharedMaterial: {fileID: 7445007948689233632, guid: d4e77090f78114301b79388b651006ba, type: 2}
@@ -12762,7 +12770,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ready to Start!
+  m_text: Nice Job!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
   m_sharedMaterial: {fileID: -3337594686683082386, guid: d8a2cfc0cda634ba3969465b07aef2ab, type: 2}
@@ -13149,7 +13157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -790.364}
+  m_AnchoredPosition: {x: 0, y: -1251}
   m_SizeDelta: {x: 875.7604, y: 262.7281}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2031717823
@@ -14198,7 +14206,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 483}
+  m_AnchoredPosition: {x: 0, y: -10}
   m_SizeDelta: {x: 1191.0249, y: 190.1663}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2113796593
