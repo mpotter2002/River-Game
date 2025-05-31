@@ -60,7 +60,7 @@ public class TutorialManager : MonoBehaviour
     [Header("Game Timer Settings")]
     [SerializeField] private float gameTimeLimit = 60f;
     public float divvyBikeTimeBonus = 5f;
-    [SerializeField] private float naturePhaseTriggerTime = 30f;
+    // [SerializeField] private float naturePhaseTriggerTime = 30f; // REMOVED
 
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverPanel;
@@ -75,7 +75,7 @@ public class TutorialManager : MonoBehaviour
 
     private float currentTime;
     private bool isGameTimerRunning = false;
-    private bool hasEnteredNaturePhase = false;
+    // private bool hasEnteredNaturePhase = false; // REMOVED
 
     [Header("Camera Settings")]
     [SerializeField] private float cameraStartY = 0f; // Set this to your camera's starting Y position in the Inspector
@@ -94,7 +94,7 @@ public class TutorialManager : MonoBehaviour
     {
         None, ShowingWelcome, ShowingTutorialIntro, TutorialPlaying,
         ShowingItemReveal, ShowingWildlifeWarning, ShowingKeepTrashWarning,
-        ShowingReadyToStart, MainGamePlaying, NaturePhase,
+        ShowingReadyToStart, MainGamePlaying, /*NaturePhase,*/
         GameOver
     }
     public GamePhase currentPhase = GamePhase.None;
@@ -161,7 +161,7 @@ public class TutorialManager : MonoBehaviour
         timeSinceLastInput = 0f;
         isGameTimerRunning = false;
         currentTime = gameTimeLimit;
-        hasEnteredNaturePhase = false;
+        // hasEnteredNaturePhase = false; // REMOVED
 
         // SetCameraScrollActive(false); // REMOVED
         SetGameplayScriptsActive(false, true);
@@ -186,14 +186,13 @@ public class TutorialManager : MonoBehaviour
     // --- THIS METHOD IS CALLED BY THE "PLAY AGAIN" BUTTON ---
 public void PrepareToPlayAgain()
 {
-    Debug.Log("TM: PrepareToPlayAgain called. Resetting for main game (skipping tutorial intro).");
+    Debug.Log("TM: PrepareToPlayAgain called. Resetting for main game (skipping tutorial).");
     SetPanelActive(gameOverPanel, false, "GameOverPanel (PrepareToPlayAgain)");
 
     ClearExistingSpawnedItems();
 
     // Reset critical game state variables
     isGameTimerRunning = false;
-    hasEnteredNaturePhase = false;
     // currentTime will be reset by EndTutorialAndStartGame
     // score will be reset by EndTutorialAndStartGame
 
@@ -217,11 +216,9 @@ public void PrepareToPlayAgain()
     }
     // Reset skyscraper modes
     if (leftSkyscraperSpawner != null) {
-        leftSkyscraperSpawner.SwitchToNatureMode(false);
         leftSkyscraperSpawner.HaltSpawning(); // Ensure it's fully reset for ResumeSpawning
     }
     if (rightSkyscraperSpawner != null) {
-        rightSkyscraperSpawner.SwitchToNatureMode(false);
         rightSkyscraperSpawner.HaltSpawning();
     }
 
@@ -239,6 +236,29 @@ public void PrepareToPlayAgain()
     {
         riverGenerator.ResetRiver(riverStartY);
     }
+    if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.ResumeSpawning();
+    if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.ResumeSpawning();
+    if (leftSkyscraperSpawner != null)
+    {
+        leftSkyscraperSpawner.transform.position = new Vector3(
+            leftSkyscraperSpawner.transform.position.x,
+            riverStartY,
+            leftSkyscraperSpawner.transform.position.z
+        );
+    }
+    if (rightSkyscraperSpawner != null)
+    {
+        rightSkyscraperSpawner.transform.position = new Vector3(
+            rightSkyscraperSpawner.transform.position.x,
+            riverStartY,
+            rightSkyscraperSpawner.transform.position.z
+        );
+    }
+
+    if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.ForceSpawnNow();
+    if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.ForceSpawnNow();
+
+    SetGameplayScriptsActive(true, true);
 }
 // --- END NEW METHOD ---
 
@@ -249,15 +269,15 @@ public void PrepareToPlayAgain()
 
     void Update()
     {
-        if (isGameTimerRunning && (currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.NaturePhase) )
+        if (isGameTimerRunning && (currentPhase == GamePhase.MainGamePlaying /*|| currentPhase == GamePhase.NaturePhase*/) )
         {
             currentTime -= Time.deltaTime;
             UpdateTimerDisplay();
 
-            if (currentPhase == GamePhase.MainGamePlaying && !hasEnteredNaturePhase && currentTime <= naturePhaseTriggerTime)
-            {
-                EnterNaturePhase();
-            }
+            // if (currentPhase == GamePhase.MainGamePlaying && !hasEnteredNaturePhase && currentTime <= naturePhaseTriggerTime)
+            // {
+            //     EnterNaturePhase();
+            // }
 
             if (currentTime <= 0)
             {
@@ -267,7 +287,7 @@ public void PrepareToPlayAgain()
             }
         }
 
-        if ((currentPhase == GamePhase.TutorialPlaying || currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.NaturePhase) && Time.timeScale > 0f)
+        if ((currentPhase == GamePhase.TutorialPlaying || currentPhase == GamePhase.MainGamePlaying /*|| currentPhase == GamePhase.NaturePhase*/) && Time.timeScale > 0f)
         {
             timeSinceLastInput += Time.unscaledDeltaTime;
             if (Input.anyKey || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) || Input.touchCount > 0)
@@ -294,7 +314,7 @@ public void PrepareToPlayAgain()
 
     public void AddTimeClock(float timeToAdd)
     {
-        if (isGameTimerRunning && (currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.NaturePhase))
+        if (isGameTimerRunning && (currentPhase == GamePhase.MainGamePlaying /*|| currentPhase == GamePhase.NaturePhase*/))
         {
             currentTime += timeToAdd;
             UpdateTimerDisplay();
@@ -329,7 +349,7 @@ public void PrepareToPlayAgain()
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (BeginTutorial)");
         SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (BeginTutorial)");
         timeSinceLastInput = 0f;
-        hasEnteredNaturePhase = false;
+        // hasEnteredNaturePhase = false; // REMOVED
         isGameTimerRunning = false;
 
         SetGameplayScriptsActive(true, true);
@@ -346,7 +366,7 @@ public void PrepareToPlayAgain()
         itemsProcessedInTutorial = 0;
         currentTutorialUniqueItemIndex = 0;
         timeSinceLastInput = 0f;
-        hasEnteredNaturePhase = false;
+        // hasEnteredNaturePhase = false; // REMOVED
         isGameTimerRunning = false;
 
         if (trashSpawner != null)
@@ -464,7 +484,7 @@ public void PrepareToPlayAgain()
         currentPhase = GamePhase.MainGamePlaying;
         Time.timeScale = 1f;
         timeSinceLastInput = 0f;
-        hasEnteredNaturePhase = false;
+        // hasEnteredNaturePhase = false; // REMOVED
 
         if (scoreManager != null) scoreManager.ResetScore();
         currentTime = gameTimeLimit;
@@ -487,17 +507,6 @@ public void PrepareToPlayAgain()
         }
     }
 
-    private void EnterNaturePhase()
-    {
-        Debug.Log("TM: EnterNaturePhase called. Setting phase to NaturePhase.");
-        currentPhase = GamePhase.NaturePhase;
-        hasEnteredNaturePhase = true;
-        // SetCameraScrollActive(true); // REMOVED (camera movement is now independent)
-        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.SwitchToNatureMode(true);
-        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.SwitchToNatureMode(true);
-        Debug.Log("TM: Skyscraper spawners switched to Nature mode.");
-    }
-
     private void TriggerGameOver()
     {
         Debug.Log($"TM: !!! TriggerGameOver CALLED. CurrentTime: {currentTime}, CurrentPhase: {currentPhase}, isGameTimerRunning: {isGameTimerRunning}, Time.timeScale: {Time.timeScale} !!!");
@@ -515,8 +524,8 @@ public void PrepareToPlayAgain()
         SetGameplayScriptsActive(false, true);
         if (trashSpawner != null) { trashSpawner.StopSpawning(); trashSpawner.enabled = false; }
 
-        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.SwitchToNatureMode(false);
-        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.SwitchToNatureMode(false);
+        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.HaltSpawning();
+        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.HaltSpawning();
 
         SetPanelActive(gameOverPanel, true, "GameOverPanel (TriggerGameOver)");
         if (gameOverPanel != null && !gameOverPanel.activeSelf) Debug.LogError("TM CRITICAL: gameOverPanel FAILED to activate in TriggerGameOver!");
@@ -540,15 +549,25 @@ public void PrepareToPlayAgain()
     public void ReplayTutorial()
     {
         Debug.Log("TM: ReplayTutorial called.");
+        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.enabled = true;
+        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.enabled = true;
+        if (Camera.main != null)
+        {
+            Camera.main.transform.position = new Vector3(
+                Camera.main.transform.position.x,
+                cameraStartY,
+                Camera.main.transform.position.z
+            );
+        }
         ClearExistingSpawnedItems();
         SetPanelActive(gameOverPanel, false, "GameOverPanel (ReplayTutorial)");
         if (scoreManager != null) scoreManager.ResetScore();
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (ReplayTutorial)");
         SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (ReplayTutorial)");
         isGameTimerRunning = false;
-        hasEnteredNaturePhase = false;
-        if (leftSkyscraperSpawner != null) {leftSkyscraperSpawner.SwitchToNatureMode(false); leftSkyscraperSpawner.ResumeSpawning();}
-        if (rightSkyscraperSpawner != null) {rightSkyscraperSpawner.SwitchToNatureMode(false); rightSkyscraperSpawner.ResumeSpawning();}
+        // hasEnteredNaturePhase = false; // REMOVED
+        if (leftSkyscraperSpawner != null) {leftSkyscraperSpawner.ResumeSpawning();}
+        if (rightSkyscraperSpawner != null) {rightSkyscraperSpawner.ResumeSpawning();}
         BeginTutorialSequence(); // This will handle SetCameraScrollActive(false) if it were still there
         timeSinceLastInput = 0f;
     }
@@ -573,12 +592,12 @@ public void PrepareToPlayAgain()
         SetGameplayScriptsActive(false, true);
         // SetCameraScrollActive(false); // REMOVED
         if (trashSpawner != null) { trashSpawner.StopSpawning(); trashSpawner.enabled = false; }
-        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.SwitchToNatureMode(false);
-        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.SwitchToNatureMode(false);
+        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.HaltSpawning();
+        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.HaltSpawning();
 
         currentPhase = GamePhase.ShowingWelcome;
         timeSinceLastInput = 0f;
-        hasEnteredNaturePhase = false;
+        // hasEnteredNaturePhase = false; // REMOVED
     }
 
     private void ClearExistingSpawnedItems()
