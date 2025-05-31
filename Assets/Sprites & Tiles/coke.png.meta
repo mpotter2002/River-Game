@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f7a01ebe76e264dceac6ea6bffb9091f
+guid: ab07d227efb84401b9e1bb0695d6ae51
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7858084306830112851
-    second: Final Screens 1_0
+      213: 487286147023990948
+    second: coke_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Final Screens 1_0
+      name: coke_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1080
-        height: 1920
+        x: 149
+        y: 137
+        width: 86
+        height: 152
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3583eab0b068d0d60800000000000000
-      internalID: 7858084306830112851
+      spriteID: 4a075514b2033c600800000000000000
+      internalID: 487286147023990948
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Final Screens 1_0: 7858084306830112851
+      coke_0: 487286147023990948
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
