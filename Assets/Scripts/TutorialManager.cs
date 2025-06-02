@@ -85,6 +85,8 @@ public class TutorialManager : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioSource musicAudioSource;
+    [SerializeField] private AudioSource gameOverAudioSource; // New AudioSource for Game Over music
+    [SerializeField] private AudioClip gameOverMusicClip;     // Assign in Inspector
 
     private bool isMusicMuted = false;
 
@@ -261,6 +263,14 @@ public void PrepareToPlayAgain()
     if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.ForceSpawnNow();
 
     SetGameplayScriptsActive(true, true);
+
+    // Stop Game Over music and resume main music
+    if (gameOverAudioSource != null) gameOverAudioSource.Stop();
+    if (musicAudioSource != null && musicAudioSource.clip != null)
+    {
+        musicAudioSource.loop = true;
+        musicAudioSource.Play();
+    }
 }
 // --- END NEW METHOD ---
 
@@ -306,6 +316,17 @@ public void PrepareToPlayAgain()
         {
             timeSinceLastInput = 0f;
         }
+
+        // --- NEW: Resume main music after Game Over soundtrack finishes ---
+        if (currentPhase == GamePhase.GameOver && gameOverAudioSource != null && musicAudioSource != null)
+        {
+            if (!gameOverAudioSource.isPlaying && (musicAudioSource.clip != null && !musicAudioSource.isPlaying))
+            {
+                musicAudioSource.loop = true;
+                musicAudioSource.Play();
+            }
+        }
+        // --- END NEW ---
     }
 
     private void UpdateTimerDisplay()
@@ -541,6 +562,15 @@ public void PrepareToPlayAgain()
         {
             finalScoreTextElement.text = "Final Score: " + scoreManager.GetCurrentScore();
         }
+
+        // Stop main music and play Game Over music
+        if (musicAudioSource != null) musicAudioSource.Stop();
+        if (gameOverAudioSource != null && gameOverMusicClip != null)
+        {
+            gameOverAudioSource.clip = gameOverMusicClip;
+            gameOverAudioSource.loop = false; // or true if you want it to loop
+            gameOverAudioSource.Play();
+        }
     }
 
     private void RestartGame()
@@ -574,6 +604,14 @@ public void PrepareToPlayAgain()
         if (rightSkyscraperSpawner != null) {rightSkyscraperSpawner.ResumeSpawning();}
         BeginTutorialSequence(); // This will handle SetCameraScrollActive(false) if it were still there
         timeSinceLastInput = 0f;
+
+        // Stop Game Over music and resume main music
+        if (gameOverAudioSource != null) gameOverAudioSource.Stop();
+        if (musicAudioSource != null && musicAudioSource.clip != null)
+        {
+            musicAudioSource.loop = true;
+            musicAudioSource.Play();
+        }
     }
 
     private void GoToStartMenu()
