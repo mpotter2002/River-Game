@@ -10,12 +10,28 @@ public class TrashItem : MonoBehaviour
     // public float specificTimeBonus = 5f;
     // And then use that in OnMouseDown instead of TutorialManager.Instance.divvyBikeTimeBonus
 
+    // --- Cooldown Logic ---
+    private static float lastClickTime = 0f;
+    private static readonly float clickCooldown = 0.25f; // Cooldown in seconds (e.g., 250ms)
+    // --------------------
+
     void OnMouseDown()
     {
         // Ensure the script component is enabled before processing clicks
         if (!enabled) return;
 
         Debug.Log($"Trash item clicked: {gameObject.name}");
+
+         if (Time.unscaledTime < lastClickTime + clickCooldown)
+        {
+            // Debug.Log($"TrashItem Click Cooldown Active. Time since last click: {Time.unscaledTime - lastClickTime}");
+            return; // Cooldown active, ignore this click
+        }
+        lastClickTime = Time.unscaledTime; // Update the last click time
+        // ----------------------
+
+        Debug.Log($"Trash item clicked: {gameObject.name}");
+
 
         // --- Add Score ---
         if (ScoreManager.Instance != null)

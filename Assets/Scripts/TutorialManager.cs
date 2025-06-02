@@ -88,7 +88,9 @@ public class TutorialManager : MonoBehaviour
 
     private bool isMusicMuted = false;
 
-    [SerializeField] private TMP_Text muteButtonText;
+    [SerializeField] private Sprite muteIcon;
+    [SerializeField] private Sprite unmuteIcon;
+    [SerializeField] private Image muteButtonImage;
 
     public enum GamePhase
     {
@@ -651,7 +653,7 @@ public void PrepareToPlayAgain()
         isMusicMuted = !isMusicMuted;
         musicAudioSource.mute = isMusicMuted;
 
-        if (muteButtonText != null)
-            muteButtonText.text = isMusicMuted ? "Unmute" : "Mute";
+        if (muteButtonImage != null)
+            muteButtonImage.sprite = isMusicMuted ? muteIcon : unmuteIcon;
     }
 }

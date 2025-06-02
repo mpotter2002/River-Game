@@ -4,6 +4,9 @@ public class TutorialShadowItem : MonoBehaviour
 {
     private TutorialItemData itemData;
 
+    private static float lastTutorialItemClickTime = 0f;
+    private static readonly float tutorialItemClickCooldown = 0.25f; // Cooldown in seconds
+
     // Call this method after instantiating the shadow item to give it its data
     public void Initialize(TutorialItemData data)
     {
@@ -19,6 +22,14 @@ public class TutorialShadowItem : MonoBehaviour
     {
         // Ensure the script component is enabled before processing clicks
         if (!enabled) return;
+         if (Time.unscaledTime < lastTutorialItemClickTime + tutorialItemClickCooldown)
+        {
+            // Debug.Log($"TutorialShadowItem Click Cooldown Active. Time since last click: {Time.unscaledTime - lastTutorialItemClickTime}");
+            return; // Cooldown active, ignore this click
+        }
+        lastTutorialItemClickTime = Time.unscaledTime; // Update the last click time
+        // ----------------------
+
 
         if (itemData == null)
         {
