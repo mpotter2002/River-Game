@@ -204,7 +204,7 @@ public void PrepareToPlayAgain()
     {
         Camera.main.transform.position = new Vector3(
             Camera.main.transform.position.x,
-            cameraStartY,
+            10f, // Set Y to 10 explicitly
             Camera.main.transform.position.z
         );
     }
@@ -596,6 +596,31 @@ public void PrepareToPlayAgain()
         if (trashSpawner != null) { trashSpawner.StopSpawning(); trashSpawner.enabled = false; }
         if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.HaltSpawning();
         if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.HaltSpawning();
+
+        if (Camera.main != null)
+        {
+            Camera.main.transform.position = new Vector3(
+                Camera.main.transform.position.x,
+                cameraStartY, // Reset to original starting Y
+                Camera.main.transform.position.z
+            );
+        }
+        if (leftSkyscraperSpawner != null)
+        {
+            leftSkyscraperSpawner.transform.position = new Vector3(
+                leftSkyscraperSpawner.transform.position.x,
+                riverStartY,
+                leftSkyscraperSpawner.transform.position.z
+            );
+        }
+        if (rightSkyscraperSpawner != null)
+        {
+            rightSkyscraperSpawner.transform.position = new Vector3(
+                rightSkyscraperSpawner.transform.position.x,
+                riverStartY,
+                rightSkyscraperSpawner.transform.position.z
+            );
+        }
 
         currentPhase = GamePhase.ShowingWelcome;
         timeSinceLastInput = 0f;
