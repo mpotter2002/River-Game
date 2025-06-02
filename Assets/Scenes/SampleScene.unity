@@ -2512,7 +2512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   realTrashPrefabs:
-  - {fileID: 731592720111845942, guid: fe98fcd84ec0848b791d926b2fc206c6, type: 3}
+  - {fileID: 2492520472942986127, guid: 46fdbe171c367428fbee342aa4bf3f15, type: 3}
   - {fileID: 1208507534365784052, guid: 934cbcb6cb96e494db0829b8a1cbf3c3, type: 3}
   - {fileID: 491243661938268178, guid: e94808653730042689a8dd5a16a7e495, type: 3}
   divvyBikePrefab: {fileID: 2304851758091938984, guid: 63a6e52fdbad34168850af281d52dd83, type: 3}

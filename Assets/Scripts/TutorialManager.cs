@@ -289,7 +289,7 @@ public void PrepareToPlayAgain()
             }
         }
 
-        if ((currentPhase == GamePhase.TutorialPlaying || currentPhase == GamePhase.MainGamePlaying /*|| currentPhase == GamePhase.NaturePhase*/) && Time.timeScale > 0f)
+        if (currentPhase == GamePhase.TutorialPlaying || currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.GameOver)
         {
             timeSinceLastInput += Time.unscaledDeltaTime;
             if (Input.anyKey || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) || Input.touchCount > 0)
@@ -301,7 +301,9 @@ public void PrepareToPlayAgain()
                 Debug.Log("TM: Inactivity timeout reached. Returning to Start Menu.");
                 GoToStartMenu();
             }
-        } else if (currentPhase != GamePhase.ShowingWelcome && currentPhase != GamePhase.None) {
+        }
+        else if (currentPhase != GamePhase.ShowingWelcome && currentPhase != GamePhase.None)
+        {
             timeSinceLastInput = 0f;
         }
     }
