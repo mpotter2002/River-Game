@@ -94,6 +94,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Sprite unmuteIcon;
     [SerializeField] private Image muteButtonImage;
 
+    [SerializeField] private Button backButton;
+
     public enum GamePhase
     {
         None, ShowingWelcome, ShowingTutorialIntro, TutorialPlaying,
@@ -132,6 +134,7 @@ public class TutorialManager : MonoBehaviour
         if (replayTutorialButton == null) Debug.LogWarning("TM: Replay Tutorial Button not assigned for Game Over panel.");
         if (warningOkayButton == null) Debug.LogError("TM: Wildlife Warning Okay Button not assigned!");
         if (keepTrashWarningOkayButton == null) Debug.LogError("TM: Keep Trash Warning Okay Button not assigned!");
+        if (backButton == null) Debug.LogWarning("TM: BackButton not assigned in Inspector!");
         // if (cameraScrollScript == null) Debug.LogWarning("TM: CameraScrollScript not assigned in Inspector. Camera movement will not be controlled by TutorialManager."); // REMOVED
         // else Debug.Log($"TM: CameraScrollScript assigned: {cameraScrollScript.gameObject.name}, Initial intended enabled state in Start: False"); // REMOVED
 
@@ -149,6 +152,7 @@ public class TutorialManager : MonoBehaviour
         if (startRealGameButton != null) startRealGameButton.onClick.AddListener(EndTutorialAndStartGame); else Debug.LogError("TM: StartRealGameButton not assigned!");
         if (playAgainButton != null) playAgainButton.onClick.AddListener(PrepareToPlayAgain); else Debug.LogWarning("TM: Play Again Button (on GameOverPanel) not assigned!");
         if (replayTutorialButton != null) replayTutorialButton.onClick.AddListener(ReplayTutorial); else Debug.LogWarning("TM: ReplayTutorialButton not assigned!");
+        if (backButton != null) backButton.onClick.AddListener(OnBackButtonClicked);
 
 
         // Initial UI states
@@ -172,6 +176,9 @@ public class TutorialManager : MonoBehaviour
         if(trashSpawner != null) trashSpawner.enabled = false;
 
         Debug.Log($"TM: Start() finished. Initial currentPhase: {currentPhase}, gameTimeLimit: {gameTimeLimit}, isGameTimerRunning: {isGameTimerRunning}, currentTime: {currentTime}");
+
+        SetPanelActive(welcomePanel, true, "WelcomePanel (Start)");
+        SetBackButtonVisible(true);
     }
 
     private void SetPanelActive(GameObject panel, bool isActive, string panelNameForLog = "Panel")
@@ -299,7 +306,7 @@ public void PrepareToPlayAgain()
             }
         }
 
-        if (currentPhase == GamePhase.TutorialPlaying || currentPhase == GamePhase.MainGamePlaying || currentPhase == GamePhase.GameOver)
+        if (currentPhase != GamePhase.ShowingWelcome)
         {
             timeSinceLastInput += Time.unscaledDeltaTime;
             if (Input.anyKey || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) || Input.touchCount > 0)
@@ -308,11 +315,11 @@ public void PrepareToPlayAgain()
             }
             if (timeSinceLastInput >= inactivityTimeout)
             {
-                Debug.Log("TM: Inactivity timeout reached. Returning to Start Menu.");
-                GoToStartMenu();
+                Debug.Log("TM: Inactivity timeout reached. Loading Title Scene.");
+                SceneManager.LoadScene("SampleScene"); // Replace with your actual title scene name
             }
         }
-        else if (currentPhase != GamePhase.ShowingWelcome && currentPhase != GamePhase.None)
+        else
         {
             timeSinceLastInput = 0f;
         }
@@ -357,6 +364,7 @@ public void PrepareToPlayAgain()
         Debug.Log("TM: BeginTutorialSequence called. Setting phase to ShowingTutorialIntro.");
         SetPanelActive(welcomePanel, false, "WelcomePanel (BeginTutorial)");
         SetPanelActive(tutorialIntroPanel, true, "TutorialIntroPanel (BeginTutorial)");
+        SetBackButtonVisible(false);
 
         if (tutorialIntroPanel != null && tutorialIntroPanel.activeSelf && startTutorialButton != null)
         {
@@ -405,6 +413,8 @@ public void PrepareToPlayAgain()
             } else Debug.LogError("TM: TutorialItems list is empty!");
         }
         // SetCameraScrollActive(false); // REMOVED
+
+        SetBackButtonVisible(false);
     }
 
     public void ShadowClicked(TutorialItemData itemData)
@@ -554,7 +564,7 @@ public void PrepareToPlayAgain()
         if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.HaltSpawning();
 
         SetPanelActive(gameOverPanel, true, "GameOverPanel (TriggerGameOver)");
-        if (gameOverPanel != null && !gameOverPanel.activeSelf) Debug.LogError("TM CRITICAL: gameOverPanel FAILED to activate in TriggerGameOver!");
+        SetBackButtonVisible(true);
 
         SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (TriggerGameOver)");
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (TriggerGameOver)");
@@ -619,7 +629,7 @@ public void PrepareToPlayAgain()
         }
     }
 
-    private void GoToStartMenu()
+    public void GoToStartMenu()
     {
         Debug.Log("TM: GoToStartMenu called.");
         Time.timeScale = 0f;
@@ -635,6 +645,7 @@ public void PrepareToPlayAgain()
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (GoToStartMenu)");
 
         SetPanelActive(welcomePanel, true, "WelcomePanel (GoToStartMenu)");
+        SetBackButtonVisible(true);
 
         SetGameplayScriptsActive(false, true);
         // SetCameraScrollActive(false); // REMOVED
@@ -726,5 +737,24 @@ public void PrepareToPlayAgain()
 
         if (muteButtonImage != null)
             muteButtonImage.sprite = isMusicMuted ? muteIcon : unmuteIcon;
+    }
+
+    public void OnBackButtonClicked()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScreen"); // Use your actual scene name
+    }
+
+    private void SetBackButtonVisible(bool isVisible)
+    {
+        Debug.Log($"[SetBackButtonVisible] Called with isVisible={isVisible} at phase {currentPhase}. backButton is {(backButton != null ? "assigned" : "null")}");
+        if (backButton != null)
+        {
+            backButton.gameObject.SetActive(isVisible);
+            Debug.Log($"[SetBackButtonVisible] backButton.gameObject.activeSelf is now: {backButton.gameObject.activeSelf}");
+        }
+        else
+        {
+            Debug.LogWarning("[SetBackButtonVisible] backButton reference is null!");
+        }
     }
 }

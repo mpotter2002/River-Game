@@ -270,4 +270,9 @@ public class TrashSpawner : MonoBehaviour
     }
 
     void OnDrawGizmosSelected() { /* ... same ... */ }
+
+    public void OnBackButtonClicked()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScreen"); // Replace with your actual title scene name
+    }
 }

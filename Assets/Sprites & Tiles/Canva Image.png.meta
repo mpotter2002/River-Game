@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ba3d6a8148c7474bb9bd8eba69f9965
+guid: 066e8f980918f4427a86e2da9b4610a5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4253521595298799253
-    second: Beaver Final (2)_0
+      213: 2522033527675564510
+    second: Canva Image_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Beaver Final (2)_0
+      name: Canva Image_0
       rect:
         serializedVersion: 2
-        x: 179
-        y: 159
-        width: 187
-        height: 162
+        x: 370
+        y: 235
+        width: 93
+        height: 44
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 59edc34da5b870b30800000000000000
-      internalID: 4253521595298799253
+      spriteID: ed13ab09120100320800000000000000
+      internalID: 2522033527675564510
       vertices: []
       indices: 
       edges: []

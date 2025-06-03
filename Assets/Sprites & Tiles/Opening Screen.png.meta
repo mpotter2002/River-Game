@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ba3d6a8148c7474bb9bd8eba69f9965
+guid: 5175eb26556504efd9eee4fdab586b9d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4253521595298799253
-    second: Beaver Final (2)_0
+      213: -3478849674952738770
+    second: Opening Screen_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Beaver Final (2)_0
+      name: Opening Screen_0
       rect:
         serializedVersion: 2
-        x: 179
-        y: 159
-        width: 187
-        height: 162
+        x: 0
+        y: 0
+        width: 1080
+        height: 1920
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 59edc34da5b870b30800000000000000
-      internalID: 4253521595298799253
+      spriteID: e28757107a4a8bfc0800000000000000
+      internalID: -3478849674952738770
       vertices: []
       indices: 
       edges: []

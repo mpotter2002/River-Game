@@ -1,0 +1,62 @@
+{
+    "name": "TitleScreenInput",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "4714db17-38b7-4202-a319-4adcaf73d594",
+            "actions": [
+                {
+                    "name": "RefreshVideo",
+                    "type": "PassThrough",
+                    "id": "b0f5c6ee-d2c2-4805-a78c-0caddbbc07c2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "15bf25d6-6aa2-4ed4-9a49-d9c296f8b576",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RefreshVideo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d35923d6-ca79-4e79-9204-3a3869dde3c3",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RefreshVideo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard/Mouse",
+            "bindingGroup": "Keyboard/Mouse",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
