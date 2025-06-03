@@ -2528,7 +2528,7 @@ MonoBehaviour:
   goodItemPrefabs:
   - {fileID: 7354731644942723040, guid: c34158ab7ee3e4043b2cbdecec00e532, type: 3}
   - {fileID: 6579818505630898756, guid: 0f2ab6b2381cd49f7beb74a04d2f2c9f, type: 3}
-  goodItemSpawnInterval: 12
+  goodItemSpawnInterval: 10
   goodItemDeductionAmount: 3
 --- !u!1001 &904505854
 PrefabInstance:
