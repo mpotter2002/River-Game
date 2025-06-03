@@ -47,12 +47,9 @@ public class ScoreManager : MonoBehaviour
     // Public method that other scripts (like TrashItem.cs) can call to add points
     public void AddScore(int pointsToAdd)
     {
-        if (pointsToAdd > 0) // Optional: only add positive points
-        {
-            currentScore += pointsToAdd;
-            UpdateScoreDisplay(); // Refresh the UI text with the new score
-            // Debug.Log($"Score is now: {currentScore}"); // Optional: for testing
-        }
+        currentScore += pointsToAdd;
+        UpdateScoreDisplay();
+        // Debug.Log($"Score is now: {currentScore}"); // Optional: for testing
     }
 
     // Updates the assigned TextMeshPro UI element with the current score value

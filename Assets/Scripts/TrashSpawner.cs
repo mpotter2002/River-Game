@@ -27,6 +27,13 @@ public class TrashSpawner : MonoBehaviour
     [Tooltip("Assign the Main Camera here. Used for checking if tutorial items are off-screen.")]
     [SerializeField] private Camera mainCamera;
 
+    [Tooltip("Assign GOOD ITEM PREFABS here. These are items that DEDUCT points if clicked.")]
+    [SerializeField] private GameObject[] goodItemPrefabs;
+    [Tooltip("How often (in seconds) a good item should attempt to spawn.")]
+    [SerializeField] private float goodItemSpawnInterval = 12f;
+    [Tooltip("How many points to deduct when a good item is clicked.")]
+    [SerializeField] private int goodItemDeductionAmount = 3;
+
     // --- Tutorial Specific Variables ---
     private TutorialItemData currentTutorialItemFocus; // The single item to repeatedly spawn
     private bool isTutorialMode = false;
@@ -35,6 +42,8 @@ public class TrashSpawner : MonoBehaviour
     private Coroutine spawningCoroutine;
     private float timeSinceLastDivvyBikeSpawn = 0f;
     private bool shouldAttemptDivvySpawnNext = false;
+    private float timeSinceLastGoodItemSpawn = 0f;
+    private bool shouldAttemptGoodItemSpawnNext = false;
 
     void Start()
     {
@@ -53,12 +62,18 @@ public class TrashSpawner : MonoBehaviour
 
     void Update()
     {
-        if (!isTutorialMode && spawningCoroutine != null && divvyBikePrefab != null)
-        {
-            timeSinceLastDivvyBikeSpawn += Time.deltaTime;
-            if (timeSinceLastDivvyBikeSpawn >= divvyBikeSpawnInterval)
-            {
-                shouldAttemptDivvySpawnNext = true;
+        if (!isTutorialMode && spawningCoroutine != null) {
+            if (divvyBikePrefab != null) {
+                timeSinceLastDivvyBikeSpawn += Time.deltaTime;
+                if (timeSinceLastDivvyBikeSpawn >= divvyBikeSpawnInterval) {
+                    shouldAttemptDivvySpawnNext = true;
+                }
+            }
+            if (goodItemPrefabs != null && goodItemPrefabs.Length > 0) {
+                timeSinceLastGoodItemSpawn += Time.deltaTime;
+                if (timeSinceLastGoodItemSpawn >= goodItemSpawnInterval) {
+                    shouldAttemptGoodItemSpawnNext = true;
+                }
             }
         }
 
@@ -129,6 +144,8 @@ public class TrashSpawner : MonoBehaviour
         if (activeTutorialShadowInstance != null) { Destroy(activeTutorialShadowInstance); activeTutorialShadowInstance = null; }
         timeSinceLastDivvyBikeSpawn = 0f;
         shouldAttemptDivvySpawnNext = false;
+        timeSinceLastGoodItemSpawn = 0f;
+        shouldAttemptGoodItemSpawnNext = false;
 
         if ((realTrashPrefabs == null || realTrashPrefabs.Length == 0) && divvyBikePrefab == null) {
             Debug.LogError("TrashSpawner: No RealTrashPrefabs or DivvyBikePrefab assigned. Cannot start real game spawning.");
@@ -176,6 +193,7 @@ public class TrashSpawner : MonoBehaviour
     {
         GameObject objectToInstantiate = null;
         GameObject dynamicallyCreatedObject = null;
+        bool isGoodItemToSpawn = false;
 
         if (isTutorialMode)
         {
@@ -206,8 +224,13 @@ public class TrashSpawner : MonoBehaviour
         }
         else // --- REAL GAME MODE SPAWNING ---
         {
-            // ... (Real game mode logic remains the same) ...
-            if (shouldAttemptDivvySpawnNext && divvyBikePrefab != null) {
+            if (shouldAttemptGoodItemSpawnNext && goodItemPrefabs != null && goodItemPrefabs.Length > 0) {
+                int randomGoodIndex = Random.Range(0, goodItemPrefabs.Length);
+                objectToInstantiate = goodItemPrefabs[randomGoodIndex];
+                timeSinceLastGoodItemSpawn = 0f;
+                shouldAttemptGoodItemSpawnNext = false;
+                isGoodItemToSpawn = true;
+            } else if (shouldAttemptDivvySpawnNext && divvyBikePrefab != null) {
                 objectToInstantiate = divvyBikePrefab;
                 timeSinceLastDivvyBikeSpawn = 0f;
                 shouldAttemptDivvySpawnNext = false;
@@ -215,9 +238,9 @@ public class TrashSpawner : MonoBehaviour
                 if (realTrashPrefabs != null && realTrashPrefabs.Length > 0) {
                     int randomIndex = Random.Range(0, realTrashPrefabs.Length);
                     objectToInstantiate = realTrashPrefabs[randomIndex];
-                } else if (divvyBikePrefab == null) {
-                     Debug.LogError("TrashSpawner: realTrashPrefabs empty and no DivvyBikePrefab.");
-                     return;
+                } else if (divvyBikePrefab == null && (goodItemPrefabs == null || goodItemPrefabs.Length == 0)) {
+                    Debug.LogError("TrashSpawner: realTrashPrefabs empty and no DivvyBikePrefab or GoodItemPrefabs.");
+                    return;
                 }
             }
         }
@@ -235,7 +258,14 @@ public class TrashSpawner : MonoBehaviour
             dynamicallyCreatedObject.transform.position = spawnPosition;
         }
         else if (!isTutorialMode && objectToInstantiate != null) {
-            Instantiate(objectToInstantiate, spawnPosition, Quaternion.identity);
+            GameObject spawned = Instantiate(objectToInstantiate, spawnPosition, Quaternion.identity);
+            if (isGoodItemToSpawn) {
+                TrashItem ti = spawned.GetComponent<TrashItem>();
+                if (ti != null) {
+                    ti.isGoodItem = true;
+                    ti.goodItemDeductionAmount = goodItemDeductionAmount;
+                }
+            }
         }
     }
 

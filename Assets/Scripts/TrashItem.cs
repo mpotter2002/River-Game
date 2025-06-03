@@ -10,6 +10,11 @@ public class TrashItem : MonoBehaviour
     // public float specificTimeBonus = 5f;
     // And then use that in OnMouseDown instead of TutorialManager.Instance.divvyBikeTimeBonus
 
+    [Tooltip("Check this if this trash item is a GOOD ITEM that DEDUCTS points if clicked.")]
+    public bool isGoodItem = false;
+    [Tooltip("How many points to deduct if this is a good item. Usually set by TrashSpawner.")]
+    public int goodItemDeductionAmount = 3;
+
     // --- Cooldown Logic ---
     private static float lastClickTime = 0f;
     private static readonly float clickCooldown = 0.25f; // Cooldown in seconds (e.g., 250ms)
@@ -32,7 +37,20 @@ public class TrashItem : MonoBehaviour
 
         Debug.Log($"Trash item clicked: {gameObject.name}");
 
-
+        // --- Good Item Deduction ---
+        if (isGoodItem)
+        {
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddScore(-goodItemDeductionAmount);
+            }
+            else
+            {
+                Debug.LogWarning($"TrashItem ({gameObject.name}): ScoreManager.Instance is null! Cannot deduct score for good item.");
+            }
+            Destroy(gameObject);
+            return;
+        }
         // --- Add Score ---
         if (ScoreManager.Instance != null)
         {
