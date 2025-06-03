@@ -320,7 +320,8 @@ public void PrepareToPlayAgain()
         // --- NEW: Resume main music after Game Over soundtrack finishes ---
         if (currentPhase == GamePhase.GameOver && gameOverAudioSource != null && musicAudioSource != null)
         {
-            if (!gameOverAudioSource.isPlaying && (musicAudioSource.clip != null && !musicAudioSource.isPlaying))
+            // Only start main music if ending music is done and main music is NOT playing
+            if (!gameOverAudioSource.isPlaying && !musicAudioSource.isPlaying)
             {
                 musicAudioSource.loop = true;
                 musicAudioSource.Play();
@@ -564,12 +565,16 @@ public void PrepareToPlayAgain()
         }
 
         // Stop main music and play Game Over music
-        if (musicAudioSource != null) musicAudioSource.Stop();
+        if (musicAudioSource != null) {
+            musicAudioSource.Stop();
+            Debug.Log("Main music stopped in TriggerGameOver.");
+        }
         if (gameOverAudioSource != null && gameOverMusicClip != null)
         {
             gameOverAudioSource.clip = gameOverMusicClip;
-            gameOverAudioSource.loop = false; // or true if you want it to loop
+            gameOverAudioSource.loop = false;
             gameOverAudioSource.Play();
+            gameOverAudioSource.mute = isMusicMuted;
         }
     }
 
@@ -713,10 +718,11 @@ public void PrepareToPlayAgain()
 
     public void ToggleMusicMute()
     {
-        if (musicAudioSource == null) return;
-
         isMusicMuted = !isMusicMuted;
-        musicAudioSource.mute = isMusicMuted;
+        if (musicAudioSource != null)
+            musicAudioSource.mute = isMusicMuted;
+        if (gameOverAudioSource != null)
+            gameOverAudioSource.mute = isMusicMuted;
 
         if (muteButtonImage != null)
             muteButtonImage.sprite = isMusicMuted ? muteIcon : unmuteIcon;
