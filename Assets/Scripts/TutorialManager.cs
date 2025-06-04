@@ -315,8 +315,8 @@ public void PrepareToPlayAgain()
             }
             if (timeSinceLastInput >= inactivityTimeout)
             {
-                Debug.Log("TM: Inactivity timeout reached. Loading Title Scene.");
-                SceneManager.LoadScene("SampleScene"); // Replace with your actual title scene name
+                Debug.Log("TM: Inactivity timeout reached. Loading Title Screen.");
+                SceneManager.LoadScene("TitleScreen"); // Loads the correct title screen scene
             }
         }
         else
@@ -741,7 +741,7 @@ public void PrepareToPlayAgain()
 
     public void OnBackButtonClicked()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScreen"); // Use your actual scene name
+        SceneManager.LoadScene("TitleScreen"); // Use your actual scene name
     }
 
     private void SetBackButtonVisible(bool isVisible)
