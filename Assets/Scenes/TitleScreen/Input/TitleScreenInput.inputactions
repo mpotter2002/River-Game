@@ -37,6 +37,17 @@
                     "action": "RefreshVideo",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5de05c95-b2cc-4215-8f9d-5b9dd28455e5",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RefreshVideo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

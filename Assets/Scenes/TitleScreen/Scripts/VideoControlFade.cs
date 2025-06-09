@@ -8,8 +8,7 @@ using UnityEngine.SceneManagement;
 public class VideoControlFade : MonoBehaviour
 {
     [SerializeField] float fadeTime, timeUntilFade;
-    [SerializeField] Image pausePlayButton, sliderBody, sliderFill, sliderHandle;
-    [SerializeField] Button backButton;
+    [SerializeField] Image pausePlayButton, sliderBody, sliderFill, sliderHandle, backButton;
     [SerializeField] GameObject videoScreen;
     [SerializeField] GameObject homeScreen;
     private float currentTime;
@@ -38,7 +37,7 @@ public class VideoControlFade : MonoBehaviour
         sliderBody.enabled = true;
         sliderHandle.enabled = true;
         sliderFill.enabled = true;
-        if (backButton != null) backButton.gameObject.SetActive(true);
+        backButton.enabled = true;
 
         controlsActive = true;
 
@@ -82,7 +81,7 @@ public class VideoControlFade : MonoBehaviour
         sliderBody.enabled = false;
         sliderHandle.enabled = false;
         sliderFill.enabled = false;
-        if (backButton != null) backButton.gameObject.SetActive(false);
+        backButton.enabled = false;
     }
 
     private void SetAlpha(float alpha)
@@ -91,17 +90,6 @@ public class VideoControlFade : MonoBehaviour
         sliderBody.color = new Color(sliderBody.color.r, sliderBody.color.g, sliderBody.color.b, alpha);
         sliderHandle.color = new Color(sliderHandle.color.r, sliderHandle.color.g, sliderHandle.color.b, alpha);
         sliderFill.color = new Color(sliderFill.color.r, sliderFill.color.g, sliderFill.color.b, alpha);
-    }
-
-    public void OnBackButtonClicked()
-    {
-        Debug.Log("OnBackButtonClicked called");
-        if (videoScreen != null)
-        {
-            Debug.Log("Deactivating videoScreen GameObject");
-            videoScreen.SetActive(false);
-        }
-        Debug.Log("Loading TitleScreen scene");
-        SceneManager.LoadScene("TitleScreen");
+        backButton.color = new Color(backButton.color.r, backButton.color.g, backButton.color.b, alpha);
     }
 }
