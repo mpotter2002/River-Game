@@ -23,6 +23,12 @@ public class VideoControlFade : MonoBehaviour
 
     private void Update()
     {
+        // Detect tap/click to bring controls back
+        if (!controlsActive && (Input.GetMouseButtonDown(0) || Input.touchCount > 0))
+        {
+            Refresh();
+        }
+
         if(controlsActive && currentTime >= timeUntilFade)
         {
             StartCoroutine(FadeOut());

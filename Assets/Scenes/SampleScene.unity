@@ -15580,7 +15580,7 @@ MonoBehaviour:
   leftSkyscraperSpawner: {fileID: 776040131}
   rightSkyscraperSpawner: {fileID: 183771448}
   scoreManager: {fileID: 317601631}
-  gameTimeLimit: 60
+  gameTimeLimit: 45
   divvyBikeTimeBonus: 10
   gameOverPanel: {fileID: 1267472816}
   finalScoreTextElement: {fileID: 543045825}
