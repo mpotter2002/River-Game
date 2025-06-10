@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class TrashItem : MonoBehaviour
 {
@@ -15,6 +17,9 @@ public class TrashItem : MonoBehaviour
     [Tooltip("How many points to deduct if this is a good item. Usually set by TrashSpawner.")]
     public int goodItemDeductionAmount = 3;
 
+    [Header("Score Popup")]
+    [SerializeField] private GameObject scorePopupPrefab;
+
     // --- Cooldown Logic ---
     private static float lastClickTime = 0f;
     private static readonly float clickCooldown = 0.25f; // Cooldown in seconds (e.g., 250ms)
@@ -25,15 +30,11 @@ public class TrashItem : MonoBehaviour
         // Ensure the script component is enabled before processing clicks
         if (!enabled) return;
 
-        Debug.Log($"Trash item clicked: {gameObject.name}");
-
-         if (Time.unscaledTime < lastClickTime + clickCooldown)
+        if (Time.unscaledTime < lastClickTime + clickCooldown)
         {
-            // Debug.Log($"TrashItem Click Cooldown Active. Time since last click: {Time.unscaledTime - lastClickTime}");
             return; // Cooldown active, ignore this click
         }
         lastClickTime = Time.unscaledTime; // Update the last click time
-        // ----------------------
 
         Debug.Log($"Trash item clicked: {gameObject.name}");
 
@@ -43,6 +44,7 @@ public class TrashItem : MonoBehaviour
             if (ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.AddScore(-goodItemDeductionAmount);
+                SpawnScorePopup(-goodItemDeductionAmount);
             }
             else
             {
@@ -51,14 +53,21 @@ public class TrashItem : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         // --- Add Score ---
         if (ScoreManager.Instance != null)
         {
-            ScoreManager.Instance.AddScore(1); // Add 1 point for any trash
-        }
-        else
-        {
-             Debug.LogWarning($"TrashItem ({gameObject.name}): ScoreManager.Instance is null! Cannot add score.");
+            if (isDivvyBike)
+            {
+                // Only show the +15 popup for Divvy Bikes
+                ScoreManager.Instance.AddScore(15);
+                SpawnScorePopup(15);
+            }
+            else
+            {
+                ScoreManager.Instance.AddScore(1); // Add 1 point for any trash
+                SpawnScorePopup(1);
+            }
         }
 
         // --- Handle Divvy Bike Time Bonus ---
@@ -67,10 +76,10 @@ public class TrashItem : MonoBehaviour
             if (TutorialManager.Instance != null)
             {
                 // Check if the game is actually in the MainGamePlaying phase before adding time
-                // This uses the 'currentPhase' and 'GamePhase' enum from the TutorialManager
                 if (TutorialManager.Instance.currentPhase == TutorialManager.GamePhase.MainGamePlaying)
                 {
                     TutorialManager.Instance.AddTimeClock(TutorialManager.Instance.divvyBikeTimeBonus);
+                    SpawnScorePopup(15); // Show +15 for Divvy Bike
                 }
                 else
                 {
@@ -85,6 +94,49 @@ public class TrashItem : MonoBehaviour
 
         // Destroy the GameObject this script is attached to
         Destroy(gameObject);
+    }
+
+    private void SpawnScorePopup(int score)
+    {
+        Debug.Log($"[TrashItem] Attempting to spawn score popup for score: {score}");
+        if (scorePopupPrefab == null)
+        {
+            Debug.LogWarning("[TrashItem] scorePopupPrefab is not assigned! Cannot spawn score popup.");
+            return;
+        }
+        Debug.Log("[TrashItem] Using assigned prefab for popup.");
+        GameObject popup = Instantiate(scorePopupPrefab);
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas != null)
+        {
+            popup.transform.SetParent(canvas.transform, false);
+            Vector3 worldPosition = transform.position + Vector3.up * 0.5f;
+            Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvas.transform as RectTransform,
+                screenPosition,
+                canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                out Vector2 localPoint
+            );
+            RectTransform popupRect = popup.GetComponent<RectTransform>();
+            popupRect.anchoredPosition = localPoint;
+            popupRect.localScale = Vector3.one;
+            Debug.Log($"[Popup] Local anchored position: {localPoint}");
+        }
+        else
+        {
+            Debug.LogWarning("No Canvas found in scene!");
+        }
+        FloatingScorePopup scorePopup = popup.GetComponent<FloatingScorePopup>();
+        if (scorePopup != null)
+        {
+            scorePopup.SetScore(score);
+            Debug.Log("[TrashItem] Set score on popup prefab.");
+        }
+        else
+        {
+            Debug.LogWarning("[TrashItem] FloatingScorePopup component missing on prefab!");
+        }
     }
 
     // Optional: Visual feedback on hover

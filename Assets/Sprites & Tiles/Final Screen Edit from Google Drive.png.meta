@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f0e4df2cf708c4719b3992d9a6bc4e78
+guid: 857b55902c00b49cdac601352561fa5d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7538933439936585670
-    second: Final Screens 2_0
+      213: -4233956144152635741
+    second: Final Screen Edit from Google Drive_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Final Screens 2_0
+      name: Final Screen Edit from Google Drive_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6cfdbb8450caf9860800000000000000
-      internalID: 7538933439936585670
+      spriteID: 3a61331c157fd35c0800000000000000
+      internalID: -4233956144152635741
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Final Screens 2_0: 7538933439936585670
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -127,7 +127,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.86, y: 1.52}
+    oldSize: {x: 0.6142857, y: 1.0857143}
     newSize: {x: 1.72, y: 3.04}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -148,3 +148,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDivvyBike: 0
+  isGoodItem: 0
+  goodItemDeductionAmount: 3
+  scorePopupPrefab: {fileID: 918556388172182826, guid: 4c79d015c317b46e185cbf0e98072f4d, type: 3}

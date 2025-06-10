@@ -150,3 +150,4 @@ MonoBehaviour:
   isDivvyBike: 1
   isGoodItem: 0
   goodItemDeductionAmount: 3
+  scorePopupPrefab: {fileID: 918556388172182826, guid: 4c79d015c317b46e185cbf0e98072f4d, type: 3}

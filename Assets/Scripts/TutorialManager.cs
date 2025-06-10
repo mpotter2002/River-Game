@@ -9,7 +9,6 @@ public class TutorialManager : MonoBehaviour
     public static TutorialManager Instance { get; private set; }
 
     [Header("Tutorial Flow Panels")]
-    [SerializeField] private GameObject welcomePanel;
     [SerializeField] private GameObject tutorialIntroPanel;
     [SerializeField] private GameObject itemRevealPanel;
     [SerializeField] private GameObject readyToStartPanel;
@@ -96,9 +95,11 @@ public class TutorialManager : MonoBehaviour
 
     [SerializeField] private Button backButton;
 
+    [SerializeField] private Button skipTutorialButton;
+
     public enum GamePhase
     {
-        None, ShowingWelcome, ShowingTutorialIntro, TutorialPlaying,
+        None, ShowingTutorialIntro, TutorialPlaying,
         ShowingItemReveal, ShowingWildlifeWarning, ShowingKeepTrashWarning,
         ShowingReadyToStart, MainGamePlaying, /*NaturePhase,*/
         GameOver
@@ -110,13 +111,15 @@ public class TutorialManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         Debug.Log("TM: Awake() called.");
+
+        if (skipTutorialButton != null) skipTutorialButton.onClick.AddListener(SkipTutorialToReadyPanel);
+        else Debug.LogWarning("TM: SkipTutorialButton not assigned!");
     }
 
     void Start()
     {
         Debug.Log("TM: Start() called.");
         // Null checks
-        if (welcomePanel == null) Debug.LogError("TM: Welcome Panel not assigned!");
         if (tutorialIntroPanel == null) Debug.LogError("TM: Tutorial Intro Panel not assigned!");
         if (itemRevealPanel == null) Debug.LogError("TM: Item Reveal Panel not assigned!");
         if (readyToStartPanel == null) Debug.LogError("TM: Ready To Start Panel not assigned!");
@@ -140,7 +143,6 @@ public class TutorialManager : MonoBehaviour
 
         if (gameTimeLimit <= 0) Debug.LogError($"TM CRITICAL: gameTimeLimit in Inspector is {gameTimeLimit}, which is not positive. Game will likely end immediately if started!");
 
-
         // Button listeners
         if (startTutorialButton != null) startTutorialButton.onClick.AddListener(StartTutorialGameplay);
         else Debug.LogError("TM CRITICAL: Start Tutorial Button (on TutorialIntroPanel) NOT ASSIGNED in Inspector!");
@@ -154,7 +156,6 @@ public class TutorialManager : MonoBehaviour
         if (replayTutorialButton != null) replayTutorialButton.onClick.AddListener(ReplayTutorial); else Debug.LogWarning("TM: ReplayTutorialButton not assigned!");
         if (backButton != null) backButton.onClick.AddListener(OnBackButtonClicked);
 
-
         // Initial UI states
         SetPanelActive(tutorialIntroPanel, false, "TutorialIntroPanel (Start)");
         SetPanelActive(itemRevealPanel, false, "ItemRevealPanel (Start)");
@@ -165,20 +166,21 @@ public class TutorialManager : MonoBehaviour
         SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (Start)");
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (Start)");
 
-        currentPhase = GamePhase.ShowingWelcome;
+        // Initialize game state
+        currentPhase = GamePhase.None;
         timeSinceLastInput = 0f;
         isGameTimerRunning = false;
         currentTime = gameTimeLimit;
-        // hasEnteredNaturePhase = false; // REMOVED
-
-        // SetCameraScrollActive(false); // REMOVED
         SetGameplayScriptsActive(false, true);
         if(trashSpawner != null) trashSpawner.enabled = false;
-
         Debug.Log($"TM: Start() finished. Initial currentPhase: {currentPhase}, gameTimeLimit: {gameTimeLimit}, isGameTimerRunning: {isGameTimerRunning}, currentTime: {currentTime}");
-
-        SetPanelActive(welcomePanel, true, "WelcomePanel (Start)");
         SetBackButtonVisible(true);
+
+        // Automatically start the tutorial sequence
+        BeginTutorialSequence();
+
+        if (skipTutorialButton != null)
+            skipTutorialButton.gameObject.SetActive(false);
     }
 
     private void SetPanelActive(GameObject panel, bool isActive, string panelNameForLog = "Panel")
@@ -306,7 +308,7 @@ public void PrepareToPlayAgain()
             }
         }
 
-        if (currentPhase != GamePhase.ShowingWelcome)
+        if (currentPhase != GamePhase.ShowingTutorialIntro)
         {
             timeSinceLastInput += Time.unscaledDeltaTime;
             if (Input.anyKey || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) || Input.touchCount > 0)
@@ -362,59 +364,60 @@ public void PrepareToPlayAgain()
     public void BeginTutorialSequence()
     {
         Debug.Log("TM: BeginTutorialSequence called. Setting phase to ShowingTutorialIntro.");
-        SetPanelActive(welcomePanel, false, "WelcomePanel (BeginTutorial)");
         SetPanelActive(tutorialIntroPanel, true, "TutorialIntroPanel (BeginTutorial)");
-        SetBackButtonVisible(false);
-
-        if (tutorialIntroPanel != null && tutorialIntroPanel.activeSelf && startTutorialButton != null)
-        {
-            Debug.Log($"TM: In BeginTutorialSequence - TutorialIntroPanel is active. StartTutorialButton name: '{startTutorialButton.gameObject.name}', IsActive: {startTutorialButton.gameObject.activeSelf}, IsInteractable: {startTutorialButton.interactable}");
-        }
-        else if (startTutorialButton == null)
-        {
-            Debug.LogError("TM: In BeginTutorialSequence - startTutorialButton reference is NULL!");
-        }
-
+        SetBackButtonVisible(true);  // Show back button during tutorial
         currentPhase = GamePhase.ShowingTutorialIntro;
-        Time.timeScale = 0f;
-        SetGameplayScriptsActive(false, true);
-        // SetCameraScrollActive(false); // REMOVED
-        if (trashSpawner != null) trashSpawner.enabled = false;
-        SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (BeginTutorial)");
-        SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (BeginTutorial)");
         timeSinceLastInput = 0f;
-        // hasEnteredNaturePhase = false; // REMOVED
-        isGameTimerRunning = false;
 
-        SetGameplayScriptsActive(true, true);
+        // Enable skyscraper spawners
+        if (leftSkyscraperSpawner != null)
+        {
+            leftSkyscraperSpawner.enabled = true;
+            leftSkyscraperSpawner.ResumeSpawning();
+        }
+        if (rightSkyscraperSpawner != null)
+        {
+            rightSkyscraperSpawner.enabled = true;
+            rightSkyscraperSpawner.ResumeSpawning();
+        }
     }
 
     public void StartTutorialGameplay()
     {
-        Debug.Log("TM: !!! StartTutorialGameplay method CALLED !!!");
-        ClearExistingSpawnedItems();
+        Debug.Log("TM: StartTutorialGameplay called.");
         SetPanelActive(tutorialIntroPanel, false, "TutorialIntroPanel (StartTutorialGameplay)");
         currentPhase = GamePhase.TutorialPlaying;
-        Time.timeScale = 1f;
-        Debug.Log("TM: Starting Tutorial Gameplay. Time.timeScale = 1");
-        itemsProcessedInTutorial = 0;
-        currentTutorialUniqueItemIndex = 0;
+        SetBackButtonVisible(true);  // Keep back button visible during tutorial gameplay
         timeSinceLastInput = 0f;
-        // hasEnteredNaturePhase = false; // REMOVED
-        isGameTimerRunning = false;
+        Time.timeScale = 1f;  // Ensure game is running at normal speed
 
+        // Show skip button during tutorial gameplay
+        if (skipTutorialButton != null)
+            skipTutorialButton.gameObject.SetActive(true);
+
+        // Enable trash spawner and set up first tutorial item
         if (trashSpawner != null)
         {
             trashSpawner.enabled = true;
-            Debug.Log("TM: Enabling TrashSpawner for tutorial.");
             if (tutorialItems != null && tutorialItems.Count > 0)
             {
-                trashSpawner.StartTutorialSpawning(tutorialItems[currentTutorialUniqueItemIndex]);
-            } else Debug.LogError("TM: TutorialItems list is empty!");
+                currentTutorialUniqueItemIndex = 0;
+                trashSpawner.SetCurrentTutorialItem(tutorialItems[0]);
+                trashSpawner.StartTutorialSpawning(tutorialItems[0]);  // Start the tutorial spawning
+                Debug.Log($"TM: Setting first tutorial item: {tutorialItems[0].itemName}");
+            }
+            else
+            {
+                Debug.LogError("TM: No tutorial items available to start tutorial!");
+            }
         }
-        // SetCameraScrollActive(false); // REMOVED
+        else
+        {
+            Debug.LogError("TM: TrashSpawner not assigned!");
+        }
 
-        SetBackButtonVisible(false);
+        // Enable gameplay scripts
+        SetGameplayScriptsActive(true, true);
     }
 
     public void ShadowClicked(TutorialItemData itemData)
@@ -514,33 +517,32 @@ public void PrepareToPlayAgain()
 
     public void EndTutorialAndStartGame()
     {
-        Debug.Log("TM: EndTutorialAndStartGame called. Setting phase to MainGamePlaying.");
-        ClearExistingSpawnedItems();
+        Debug.Log("TM: EndTutorialAndStartGame called.");
+        if (skipTutorialButton != null)
+            skipTutorialButton.gameObject.SetActive(false);
         SetPanelActive(readyToStartPanel, false, "ReadyToStartPanel (EndTutorialAndStartGame)");
         currentPhase = GamePhase.MainGamePlaying;
-        Time.timeScale = 1f;
+        SetBackButtonVisible(true);  // Keep back button visible during main game
         timeSinceLastInput = 0f;
-        // hasEnteredNaturePhase = false; // REMOVED
-
-        if (scoreManager != null) scoreManager.ResetScore();
-        currentTime = gameTimeLimit;
         isGameTimerRunning = true;
-        Debug.Log($"TM: currentTime initialized to: {currentTime} (from gameTimeLimit: {gameTimeLimit})");
-
-        SetPanelActive(timerDisplayPanel, true, "TimerDisplayPanel (EndTutorialAndStartGame)");
-        SetPanelActive(scoreDisplayPanel, true, "ScoreDisplayPanel (EndTutorialAndStartGame)");
-        UpdateTimerDisplay();
-
+        currentTime = gameTimeLimit;
+        Time.timeScale = 1f;  // Ensure game is running at normal speed
         SetGameplayScriptsActive(true, true);
-        // SetCameraScrollActive(true); // REMOVED
-        if (leftSkyscraperSpawner != null) leftSkyscraperSpawner.ResumeSpawning();
-        if (rightSkyscraperSpawner != null) rightSkyscraperSpawner.ResumeSpawning();
-
+        
+        // Start real game spawning
         if (trashSpawner != null)
         {
             trashSpawner.enabled = true;
             trashSpawner.StartRealGameSpawning();
+            Debug.Log("TM: Started real game spawning");
         }
+        else
+        {
+            Debug.LogError("TM: TrashSpawner not assigned!");
+        }
+        
+        SetPanelActive(timerDisplayPanel, true, "TimerDisplayPanel (EndTutorialAndStartGame)");
+        SetPanelActive(scoreDisplayPanel, true, "ScoreDisplayPanel (EndTutorialAndStartGame)");
     }
 
     private void TriggerGameOver()
@@ -644,7 +646,7 @@ public void PrepareToPlayAgain()
         SetPanelActive(timerDisplayPanel, false, "TimerDisplayPanel (GoToStartMenu)");
         SetPanelActive(scoreDisplayPanel, false, "ScoreDisplayPanel (GoToStartMenu)");
 
-        SetPanelActive(welcomePanel, true, "WelcomePanel (GoToStartMenu)");
+        SetPanelActive(tutorialIntroPanel, true, "TutorialIntroPanel (GoToStartMenu)");
         SetBackButtonVisible(true);
 
         SetGameplayScriptsActive(false, true);
@@ -678,7 +680,7 @@ public void PrepareToPlayAgain()
             );
         }
 
-        currentPhase = GamePhase.ShowingWelcome;
+        currentPhase = GamePhase.ShowingTutorialIntro;
         timeSinceLastInput = 0f;
         // hasEnteredNaturePhase = false; // REMOVED
     }
@@ -741,7 +743,26 @@ public void PrepareToPlayAgain()
 
     public void OnBackButtonClicked()
     {
-        SceneManager.LoadScene("TitleScreen"); // Use your actual scene name
+        Debug.Log("TM: Back button clicked - returning to title screen");
+        
+        // Stop all game systems
+        Time.timeScale = 0f;
+        isGameTimerRunning = false;
+        ClearExistingSpawnedItems();
+        
+        // Stop all audio
+        if (musicAudioSource != null) musicAudioSource.Stop();
+        if (gameOverAudioSource != null) gameOverAudioSource.Stop();
+        
+        // Disable all gameplay systems
+        SetGameplayScriptsActive(false, true);
+        if (trashSpawner != null) { 
+            trashSpawner.StopSpawning(); 
+            trashSpawner.enabled = false; 
+        }
+        
+        // Load the title screen scene
+        SceneManager.LoadScene("TitleScreen");
     }
 
     private void SetBackButtonVisible(bool isVisible)
@@ -756,5 +777,32 @@ public void PrepareToPlayAgain()
         {
             Debug.LogWarning("[SetBackButtonVisible] backButton reference is null!");
         }
+    }
+
+    private void SkipTutorialToReadyPanel()
+    {
+        if (skipTutorialButton != null)
+            skipTutorialButton.gameObject.SetActive(false);
+        // Deactivate all tutorial-related panels
+        SetPanelActive(tutorialIntroPanel, false, "TutorialIntroPanel (SkipTutorial)");
+        SetPanelActive(itemRevealPanel, false, "ItemRevealPanel (SkipTutorial)");
+        SetPanelActive(wildlifeWarningPanel, false, "WildlifeWarningPanel (SkipTutorial)");
+        SetPanelActive(keepTrashWarningPanel, false, "KeepTrashWarningPanel (SkipTutorial)");
+        SetPanelActive(gameOverPanel, false, "GameOverPanel (SkipTutorial)");
+        // Move camera forward by 10 units on the y-axis
+        if (Camera.main != null)
+        {
+            Camera.main.transform.position = new Vector3(
+                Camera.main.transform.position.x,
+                Camera.main.transform.position.y + 10f,
+                Camera.main.transform.position.z
+            );
+        }
+        // Show the ReadyToStartPanel and set phase
+        currentPhase = GamePhase.ShowingReadyToStart;
+        SetPanelActive(readyToStartPanel, true, "ReadyToStartPanel (SkipTutorial)");
+        Time.timeScale = 0f;
+        if (trashSpawner != null) { trashSpawner.StopSpawning(); trashSpawner.enabled = false; }
+        SetGameplayScriptsActive(false, true);
     }
 }
