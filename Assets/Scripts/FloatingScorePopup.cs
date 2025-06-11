@@ -70,9 +70,9 @@ public class FloatingScorePopup : MonoBehaviour
         Debug.Log($"[FloatingScorePopup] SetScore called with value: {score}");
         if (textMesh != null)
         {
-            if (score == 15)
+            if (score == 10)
             {
-                textMesh.text = "+15 sec";
+                textMesh.text = "+10 sec";
                 // Set to purple #440077
                 textMesh.color = new Color(0.266f, 0.0f, 0.466f); // #440077
             }

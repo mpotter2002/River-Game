@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bf723f41765e9494bb491d65117c517d
+guid: efc9802222d1743189bbe143c787cdf4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8417003389605643882
-    second: Final Screen Edit 2 (1)_0
+      213: -1258771344936255264
+    second: Final Screen Edit 5 _0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Final Screen Edit 2 (1)_0
+      name: Final Screen Edit 5 _0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 699fb49230cc03b80800000000000000
-      internalID: -8417003389605643882
+      spriteID: 0e042ab8122f78ee0800000000000000
+      internalID: -1258771344936255264
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Final Screen Edit 2 (1)_0: -8417003389605643882
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -558,6 +558,13 @@ public void PrepareToPlayAgain()
         Debug.Log("TM: Game Over! Phase set. Time.timeScale = 0");
         timeSinceLastInput = 0f;
 
+        // Destroy all floating score popups
+        FloatingScorePopup[] floatingPopups = FindObjectsOfType<FloatingScorePopup>();
+        foreach (FloatingScorePopup popup in floatingPopups)
+        {
+            Destroy(popup.gameObject);
+        }
+
         // SetCameraScrollActive(false); // REMOVED
         SetGameplayScriptsActive(false, true);
         if (trashSpawner != null) { trashSpawner.StopSpawning(); trashSpawner.enabled = false; }

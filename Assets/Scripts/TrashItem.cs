@@ -59,9 +59,9 @@ public class TrashItem : MonoBehaviour
         {
             if (isDivvyBike)
             {
-                // Only show the +15 popup for Divvy Bikes
-                ScoreManager.Instance.AddScore(15);
-                SpawnScorePopup(15);
+                // Only show the +10 popup for Divvy Bikes
+                ScoreManager.Instance.AddScore(10);
+                SpawnScorePopup(10);
             }
             else
             {
@@ -79,7 +79,7 @@ public class TrashItem : MonoBehaviour
                 if (TutorialManager.Instance.currentPhase == TutorialManager.GamePhase.MainGamePlaying)
                 {
                     TutorialManager.Instance.AddTimeClock(TutorialManager.Instance.divvyBikeTimeBonus);
-                    SpawnScorePopup(15); // Show +15 for Divvy Bike
+                    SpawnScorePopup(10); // Show +10 for Divvy Bike
                 }
                 else
                 {

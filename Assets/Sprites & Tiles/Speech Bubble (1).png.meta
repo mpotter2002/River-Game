@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 132e7515dc1bb4a64bbf30d1d944e52c
+guid: 30701ca3da961437794f47c1ad41e914
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -634164658722306797
-    second: Final Screen Edit 3 (1)_0
+      213: -476032195722726135
+    second: Speech Bubble (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Final Screen Edit 3 (1)_0
+      name: Speech Bubble (1)_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1080
-        height: 1920
+        x: 256
+        y: 778
+        width: 568
+        height: 364
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 31500c35a9ef237f0800000000000000
-      internalID: -634164658722306797
+      spriteID: 9053c487d3bc469f0800000000000000
+      internalID: -476032195722726135
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Final Screen Edit 3 (1)_0: -634164658722306797
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
